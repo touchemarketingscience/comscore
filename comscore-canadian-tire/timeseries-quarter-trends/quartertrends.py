@@ -51,7 +51,7 @@ def process_csv(input_path, output_path):
         df[name] = remove_outliers(df[name])
         df[name] = df[name].interpolate(method='time')
 
-    df[clean1] = fourier_transform(df[name1], 0.025)
+    df[clean1] = fourier_transform(df[name1], 0.000001) #.025 default frequency
     
     print(df.columns)
     
@@ -70,8 +70,8 @@ def process_csv(input_path, output_path):
         y=name1,
         data=df,
         ax=ax,
-        label='Pet Category (Competitive Set)',
-        color='orange',
+        label='Original',
+        color='pink',
         linewidth=1.414
     )
     
@@ -80,8 +80,8 @@ def process_csv(input_path, output_path):
         y=clean1,
         data=df,
         ax=ax,
-        label='Pet Category (Comscore)',
-        color='pink',
+        label='Fourier Transform',
+        color='red',
         linewidth=1.414
     )
     
