@@ -1,0 +1,61 @@
+﻿Primary,Secondary,Percent
+Amazon,Amazon,1
+Amazon,Canadian Tire,0.24
+Amazon,Walmart,0.13
+Amazon,PetSmart,0.13
+Amazon,PetValu,0.03
+Amazon,Costco,0.03
+Amazon,PetLand,0.02
+Amazon,Sobeys,0
+Canadian Tire,Canadian Tire,1
+Canadian Tire,PetSmart,0.14
+Canadian Tire,Walmart,0.11
+Canadian Tire,Amazon,0.07
+Canadian Tire,Costco,0.03
+Canadian Tire,PetValu,0.03
+Canadian Tire,PetLand,0.02
+Canadian Tire,Sobeys,0.01
+Costco,Costco,1
+Costco,PetSmart,0.29
+Costco,Canadian Tire,0.29
+Costco,Walmart,0.19
+Costco,Amazon,0.09
+Costco,PetValu,0.05
+Costco,PetLand,0.04
+Costco,Sobeys,0.01
+PetLand,PetLand,1
+PetLand,PetSmart,0.66
+PetLand,Canadian Tire,0.34
+PetLand,PetValu,0.15
+PetLand,Amazon,0.08
+PetLand,Walmart,0.08
+PetLand,Costco,0.08
+PetSmart,PetSmart,1
+PetSmart,Canadian Tire,0.2
+PetSmart,Walmart,0.07
+PetSmart,PetValu,0.07
+PetSmart,PetLand,0.05
+PetSmart,Amazon,0.05
+PetSmart,Costco,0.04
+PetSmart,Sobeys,0.01
+PetValu,PetValu,1
+PetValu,PetSmart,0.55
+PetValu,Canadian Tire,0.29
+PetValu,Walmart,0.11
+PetValu,Amazon,0.11
+PetValu,PetLand,0.09
+PetValu,Costco,0.06
+Sobeys,Sobeys,1
+Sobeys,Canadian Tire,0.82
+Sobeys,PetSmart,0.46
+Sobeys,Walmart,0.27
+Sobeys,Amazon,0.09
+Sobeys,Costco,0.09
+Walmart,Walmart,1
+Walmart,Canadian Tire,0.33
+Walmart,PetSmart,0.15
+Walmart,Amazon,0.11
+Walmart,Costco,0.06
+Walmart,PetValu,0.03
+Walmart,PetLand,0.01
+Walmart,Sobeys,0.01

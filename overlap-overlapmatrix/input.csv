@@ -1,0 +1,61 @@
+﻿Primary,Secondary,Count,Primary Max,Percentage
+Amazon,Amazon,442,442,100.0%
+Amazon,Canadian Tire,107,442,24.2%
+Amazon,Walmart,59,442,13.3%
+Amazon,PetSmart,56,442,12.7%
+Amazon,PetValu,15,442,3.4%
+Amazon,Costco,14,442,3.2%
+Amazon,PetLand,7,442,1.6%
+Amazon,Sobeys,1,442,0.2%
+Canadian Tire,Canadian Tire,1567,1567,100.0%
+Canadian Tire,PetSmart,212,1567,13.5%
+Canadian Tire,Walmart,178,1567,11.4%
+Canadian Tire,Amazon,107,1567,6.8%
+Canadian Tire,Costco,47,1567,3.0%
+Canadian Tire,PetValu,40,1567,2.6%
+Canadian Tire,PetLand,29,1567,1.9%
+Canadian Tire,Sobeys,9,1567,0.6%
+Costco,Costco,163,163,100.0%
+Costco,PetSmart,47,163,28.8%
+Costco,Canadian Tire,47,163,28.8%
+Costco,Walmart,31,163,19.0%
+Costco,Amazon,14,163,8.6%
+Costco,PetValu,8,163,4.9%
+Costco,PetLand,7,163,4.3%
+Costco,Sobeys,1,163,0.6%
+PetLand,PetLand,86,86,100.0%
+PetLand,PetSmart,57,86,66.3%
+PetLand,Canadian Tire,29,86,33.7%
+PetLand,PetValu,13,86,15.1%
+PetLand,Amazon,7,86,8.1%
+PetLand,Walmart,7,86,8.1%
+PetLand,Costco,7,86,8.1%
+PetSmart,PetSmart,1075,1075,100.0%
+PetSmart,Canadian Tire,212,1075,19.7%
+PetSmart,Walmart,78,1075,7.3%
+PetSmart,PetValu,76,1075,7.1%
+PetSmart,PetLand,57,1075,5.3%
+PetSmart,Amazon,56,1075,5.2%
+PetSmart,Costco,47,1075,4.4%
+PetSmart,Sobeys,5,1075,0.5%
+PetValu,PetValu,138,138,100.0%
+PetValu,PetSmart,76,138,55.1%
+PetValu,Canadian Tire,40,138,29.0%
+PetValu,Walmart,15,138,10.9%
+PetValu,Amazon,15,138,10.9%
+PetValu,PetLand,13,138,9.4%
+PetValu,Costco,8,138,5.8%
+Sobeys,Sobeys,11,11,100.0%
+Sobeys,Canadian Tire,9,11,81.8%
+Sobeys,PetSmart,5,11,45.5%
+Sobeys,Walmart,3,11,27.3%
+Sobeys,Amazon,1,11,9.1%
+Sobeys,Costco,1,11,9.1%
+Walmart,Walmart,539,539,100.0%
+Walmart,Canadian Tire,178,539,33.0%
+Walmart,PetSmart,78,539,14.5%
+Walmart,Amazon,59,539,10.9%
+Walmart,Costco,31,539,5.8%
+Walmart,PetValu,15,539,2.8%
+Walmart,PetLand,7,539,1.3%
+Walmart,Sobeys,3,539,0.6%
