@@ -1,4 +1,6 @@
-WITH total_filtered_competitive_set_users AS (
+WITH 
+-- TOTAL USERS IN AUDIENCE AND THE DOMAINS THEY VISITED
+total_filtered_competitive_set_users AS (
     SELECT 
           domain,
           guid
@@ -14,12 +16,13 @@ WITH total_filtered_competitive_set_users AS (
       OR ((domain LIKE '%petsmart.ca%'     OR event_detail  LIKE '%petsmart.ca%'     ) AND (event_detail  LIKE '%pet%' OR event_detail  LIKE '%animalerie%' OR event_detail  LIKE '%animaux%'))
     )
 ),
-
 domain_visits AS (
     SELECT domain, COUNT(DISTINCT guid) AS unique_users
     FROM total_filtered_competitive_set_users
     GROUP BY domain
 ),
+
+-- TOTALS FOR CROSS JOINS
 total_target_users AS (
     SELECT COUNT(DISTINCT guid) AS total_users
     FROM total_filtered_competitive_set_users
@@ -57,6 +60,7 @@ totaleverything AS (SELECT  av.domain,
 FROM audience_percentage AS av
 CROSS JOIN total_comscore_users AS tcu
 ORDER BY user_audience_reach DESC
+LIMIT 13000
 )
 
 SELECT 
@@ -72,5 +76,5 @@ ON totaleverything.domain = comscore_domain_users.domain;
 
 
 
-LIMIT 100
+LIMIT 13000
 ;
