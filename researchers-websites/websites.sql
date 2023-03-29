@@ -26,29 +26,51 @@ total_target_users AS (
 ),
 
 total_comscore_users AS (
-    SELECT COUNT(DISTINCT guid) AS total_users_comscore
+    SELECT COUNT(DISTINCT guid) AS total_users
     FROM spectrum_comscore.clickstream_ca
     WHERE date_part(year, calendar_date) >= 2021 OR date_part(year, calendar_date) <= 2022
 ),
 
 audience_percentage AS (
-  SELECT  dv.domain,
-          dv.unique_users,
-          ttu.total_users,
-         (dv.unique_users * 100.0 / ttu.total_users) AS target_audience_reach
+  SELECT  dv.domain AS domain,
+          dv.unique_users AS user_audience_unique,
+          ttu.total_users AS user_audience_total,
+          (dv.unique_users * 100.0 / ttu.total_users)  AS user_audience_reach
   FROM domain_visits AS dv
   CROSS JOIN total_target_users AS ttu
-  ORDER BY target_audience_reach DESC
-)
+  ORDER BY user_audience_reach DESC
+),
 
+comscore_domain_users AS (
+SELECT 
+       domain,
+       COUNT(DISTINCT guid) AS total_comscore_audience
+FROM spectrum_comscore.clickstream_ca WHERE date_part(year, calendar_date) >= 2021 OR date_part(year, calendar_date) <= 2022
+GROUP BY domain
+),
 
-SELECT  av.domain,
-        av.unique_users,
-        av.total_users AS total_target,
-        av.target_audience_reach,
-        tcu.total_users_comscore AS total_comscore
+totaleverything AS (SELECT  av.domain,
+        av.user_audience_unique,
+        av.user_audience_total,
+        av.user_audience_reach,
+        tcu.total_users AS user_comscore_total
 FROM audience_percentage AS av
 CROSS JOIN total_comscore_users AS tcu
-ORDER BY target_audience_reach DESC
-LIMIT 10000
+ORDER BY user_audience_reach DESC
+)
+
+SELECT 
+totaleverything.domain,
+totaleverything.user_audience_unique,
+totaleverything.user_audience_total,
+totaleverything.user_audience_reach,
+totaleverything.user_comscore_total,
+comscore_domain_users.total_comscore_audience
+
+FROM totaleverything LEFT JOIN comscore_domain_users
+ON totaleverything.domain = comscore_domain_users.domain;
+
+
+
+LIMIT 100
 ;
