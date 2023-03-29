@@ -41,6 +41,7 @@ audience_percentage AS (
           (dv.unique_users * 100.0 / ttu.total_users)  AS user_audience_reach
   FROM domain_visits AS dv
   CROSS JOIN total_target_users AS ttu
+  WHERE user_audience_reach >= 1
   ORDER BY user_audience_reach DESC
 ),
 
@@ -57,10 +58,9 @@ totaleverything AS (SELECT  av.domain,
         av.user_audience_total,
         av.user_audience_reach,
         tcu.total_users AS user_comscore_total
-FROM audience_percentage AS av
+FROM audience_percentage AS av 
 CROSS JOIN total_comscore_users AS tcu
 ORDER BY user_audience_reach DESC
-LIMIT 13000
 )
 
 SELECT 
@@ -72,7 +72,7 @@ totaleverything.user_comscore_total,
 comscore_domain_users.total_comscore_audience
 
 FROM totaleverything LEFT JOIN comscore_domain_users
-ON totaleverything.domain = comscore_domain_users.domain;
+ON totaleverything.domain = comscore_domain_users.domain
 
 
 
