@@ -1,3 +1,6 @@
+-- CHECK GUID FLOW OF ONE PERSON
+
+
 WITH first_visits AS (
     SELECT guid,
            (CASE 
