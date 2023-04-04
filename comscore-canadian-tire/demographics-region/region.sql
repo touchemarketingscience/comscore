@@ -160,14 +160,87 @@ FROM user_data_comscore
 WHERE domain_category = 'PETS' AND domain_group = 'Walmart'
 )
 GROUP BY 1
+),
+
+competitor_amazon AS (SELECT 
+region,
+COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+'Amazon'
+FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+SELECT DISTINCT machine_id
+FROM user_data_comscore
+WHERE domain_category = 'PETS' AND domain_group = 'Amazon'
+)
+GROUP BY 1
+),
+
+competitor_costco AS (SELECT 
+region,
+COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+'Costco'
+FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+SELECT DISTINCT machine_id
+FROM user_data_comscore
+WHERE domain_category = 'PETS' AND domain_group = 'Costco'
+)
+GROUP BY 1
+),
+
+competitor_petland AS (SELECT 
+region,
+COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+'Pet Land'
+FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+SELECT DISTINCT machine_id
+FROM user_data_comscore
+WHERE domain_category = 'PETS' AND domain_group = 'Pet Land'
+)
+GROUP BY 1
+),
+
+competitor_petvalu AS (SELECT 
+region,
+COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+'Pet Valu'
+FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+SELECT DISTINCT machine_id
+FROM user_data_comscore
+WHERE domain_category = 'PETS' AND domain_group = 'Pet Valu'
+)
+GROUP BY 1
+),
+
+competitor_sobeys AS (SELECT 
+region,
+COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+'Sobeys'
+FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+SELECT DISTINCT machine_id
+FROM user_data_comscore
+WHERE domain_category = 'PETS' AND domain_group = 'Sobeys'
+)
+GROUP BY 1
+),
+
+competitor_all AS (SELECT 
+region,
+COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+'Competitive Set'
+FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+SELECT DISTINCT machine_id
+FROM user_data_comscore
+WHERE domain_category = 'PETS' AND domain_sector_type = 'Retail E-Commerce'
+)
+GROUP BY 1
 )
 
-SELECT * FROM competitor_canadiantire
-UNION ALL
-SELECT * FROM competitor_petsmart
-UNION ALL
-SELECT * FROM competitor_walmart
-  
+
+
+
+
+SELECT * FROM competitor_all
+
+
 /*
 SELECT 
     demo.region,
