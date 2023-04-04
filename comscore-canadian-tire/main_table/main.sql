@@ -95,6 +95,7 @@ WITH user_data_comscore AS (
         WHEN (domain LIKE '%fb.c%') THEN 'Facebook'
         ELSE domain
         END) AS domain_group,
+        
         (CASE 
         WHEN UPPER(zvelo) LIKE '%PET%'OR UPPER(zvelo_category) LIKE '%PET%'OR UPPER(zvelo_subcategory) LIKE '%PET%' THEN 'PETS'
         WHEN domain NOT LIKE '%estjet%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%animaux%' OR event_detail LIKE '%pets%' OR event_detail LIKE '%pet-%' OR event_detail LIKE '%pet/%' OR event_detail LIKE '%pet\.%' )
@@ -414,22 +415,34 @@ WITH user_data_comscore AS (
     END) AS is_converter
     
     FROM spectrum_comscore.clickstream_ca
-    WHERE date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022    
+    WHERE calendar_date LIKE '%2021%' OR calendar_date LIKE '%2022%'
 ),
 
 
-
-
-audience_pets AS (SELECT 
+pet_interest AS (SELECT 
+    'Pet Interest' as groupName,
     COUNT(DISTINCT guid) as unique_users
     FROM user_data_comscore WHERE guid IN (
         SELECT DISTINCT guid
         FROM user_data_comscore
         WHERE domain_interest_group = 'PETS'
     )
+),
+
+pet_intenders AS (SELECT 
+    'Pet Intender' as groupName,
+    COUNT(DISTINCT guid) as unique_users
+    FROM user_data_comscore WHERE guid IN (
+        SELECT DISTINCT guid
+        FROM user_data_comscore
+        WHERE domain_interest_group = 'PETS' AND domain_intender_group = 'PETS'
+    )
 )
 
-SELECT * FROM audience_pets
+
+SELECT * FROM pet_interest
+UNION ALL
+SELECT * FROM pet_intenders
 
 /*
 audience_comscore AS (SELECT 
