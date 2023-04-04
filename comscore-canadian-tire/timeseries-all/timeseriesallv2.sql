@@ -1,6 +1,7 @@
 WITH user_data_comscore AS (
     SELECT
-        calendar_date,
+        -- date_part(year, calendar_date) AS year,
+        -- calendar_date,
         domain,
         event_detail,
         machine_id,
@@ -75,6 +76,9 @@ WITH user_data_comscore AS (
         WHEN UPPER(zvelo) LIKE '%PET%'OR UPPER(zvelo_category) LIKE '%PET%'OR UPPER(zvelo_subcategory) LIKE '%PET%' THEN 'PETS'
         WHEN domain NOT LIKE '%estjet%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%animaux%' OR event_detail LIKE '%pets%' OR event_detail LIKE '%pet-%' OR event_detail LIKE '%pet/%' OR event_detail LIKE '%pet\.%' )
         AND ( event_detail NOT LIKE '%peti%' OR event_detail NOT LIKE '%peta%' OR event_detail NOT LIKE '%petr%' OR event_detail NOT LIKE '%ppet%') THEN 'PETS'
+        
+        
+        
         ELSE UPPER(zvelo)
         END) AS domain_category,
         (CASE
@@ -121,7 +125,12 @@ WITH user_data_comscore AS (
     WHEN (domain LIKE '%aliexpress%') THEN 'Retail E-Commerce'
     WHEN (domain LIKE '%sephora%') THEN 'Retail E-Commerce'
     ELSE 'Uncategorized'
-    END) as domain_sector_type
+    END) as domain_sector_type,
+
+    -- INTENDERS COLUMN
+    -- CONVERTERS COLUMN
+    -- 
+
     FROM spectrum_comscore.clickstream_ca
     WHERE date_part(year, calendar_date) >= 2019 AND date_part(year, calendar_date) <= 2022    
 )
