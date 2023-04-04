@@ -437,12 +437,23 @@ pet_intenders AS (SELECT
         FROM user_data_comscore
         WHERE domain_interest_group = 'PETS' AND domain_intender_group = 'PETS'
     )
-)
+),
 
+pet_converter AS (SELECT 
+    'Pet Converter' as groupName,
+    COUNT(DISTINCT guid) as unique_users
+    FROM user_data_comscore WHERE guid IN (
+        SELECT DISTINCT guid
+        FROM user_data_comscore
+        WHERE domain_interest_group = 'PETS' AND domain_intender_group = 'PETS' AND is_converter = 'CONVERTER'
+    )
+)
 
 SELECT * FROM pet_interest
 UNION ALL
 SELECT * FROM pet_intenders
+UNION ALL
+SELECT * FROM pet_converter
 
 /*
 audience_comscore AS (SELECT 
