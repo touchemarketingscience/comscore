@@ -195,18 +195,121 @@ WITH user_data_comscore AS (
     WHERE
         date_part(year, calendar_date) >= 2021
         AND date_part(year, calendar_date) <= 2022
+),
+
+competitor_canadiantire AS (
+  SELECT region,
+        COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+        'Canadian Tire'
+  FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+    SELECT DISTINCT machine_id
+    FROM user_data_comscore
+    WHERE domain_category = 'PETS' AND domain_group = 'Canadian Tire'
+  )
+  GROUP BY 1 ORDER BY 2 DESC
+),
+
+competitor_walmart AS (
+  SELECT region,
+        COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+        'Walmart'
+  FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+    SELECT DISTINCT machine_id
+    FROM user_data_comscore
+    WHERE domain_category = 'PETS' AND domain_group = 'Walmart'
+  )
+  GROUP BY 1 ORDER BY 2 DESC
+),
+
+competitor_amazon AS (
+  SELECT region,
+        COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+        'Amazon'
+  FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+    SELECT DISTINCT machine_id
+    FROM user_data_comscore
+    WHERE domain_category = 'PETS' AND domain_group = 'Amazon'
+  )
+  GROUP BY 1 ORDER BY 2 DESC
+),
+
+competitor_costco AS (
+  SELECT region,
+        COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+        'Costco'
+  FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+    SELECT DISTINCT machine_id
+    FROM user_data_comscore
+    WHERE domain_category = 'PETS' AND domain_group = 'Costco'
+  )
+  GROUP BY 1 ORDER BY 2 DESC
+),
+
+competitor_sobeys AS (
+  SELECT region,
+        COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+        'Sobeys'
+  FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+    SELECT DISTINCT machine_id
+    FROM user_data_comscore
+    WHERE domain_category = 'PETS' AND domain_group = 'Sobeys'
+  )
+  GROUP BY 1 ORDER BY 2 DESC
+),
+
+competitor_petland AS (
+  SELECT region,
+        COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+        'Pet Land'
+  FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+    SELECT DISTINCT machine_id
+    FROM user_data_comscore
+    WHERE domain_category = 'PETS' AND domain_group = 'Pet Land'
+  )
+  GROUP BY 1 ORDER BY 2 DESC
+),
+
+competitor_petvalu AS (
+  SELECT region,
+        COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+        'Pet Valu'
+  FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+    SELECT DISTINCT machine_id
+    FROM user_data_comscore
+    WHERE domain_category = 'PETS' AND domain_group = 'Pet Valu'
+  )
+  GROUP BY 1 ORDER BY 2 DESC
+),
+
+competitor_petsmart AS (
+  SELECT region,
+        COUNT(DISTINCT machine_id) AS unique_machine_id_counts,
+        'Pet Smart'
+  FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
+    SELECT DISTINCT machine_id
+    FROM user_data_comscore
+    WHERE domain_category = 'PETS' AND domain_group = 'Pet Smart'
+  )
+  GROUP BY 1 ORDER BY 2 DESC
 )
 
 
-SELECT region,
-       domain_group,
-       COUNT(DISTINCT machine_id) AS unique_machine_id_counts
-FROM spectrum_comscore.person_demographics_ca WHERE (date_part(year, date) >= 2021 and date_part(year, date) <= 2022) AND machine_id IN (
-  SELECT DISTINCT machine_id
-  FROM user_data_comscore
-  WHERE domain_category = 'PETS'
-)
-GROUP BY 1, 2 ORDER BY 3 DESC
+SELECT * FROM competitor_canadiantire
+UNION ALL
+SELECT * FROM competitor_walmart
+UNION ALL
+SELECT * FROM competitor_amazon
+UNION ALL
+SELECT * FROM competitor_costco
+UNION ALL
+SELECT * FROM competitor_sobeys
+UNION ALL
+SELECT * FROM competitor_petland
+UNION ALL
+SELECT * FROM competitor_petvalu
+UNION ALL
+SELECT * FROM competitor_petsmart
+
 
 LIMIT 10000;
 
