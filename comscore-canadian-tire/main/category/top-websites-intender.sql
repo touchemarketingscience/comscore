@@ -1,6 +1,5 @@
-WITH converters AS (
-    SELECT
-        DISTINCT guid
+WITH intenders AS (
+    SELECT DISTINCT guid
     FROM spectrum_comscore.clickstream_ca
 
     -- ********************************************************************
@@ -66,46 +65,6 @@ WITH converters AS (
             )
         )
     )
-
-    -- ********************************************************************
-    -- DOMAIN CONVERTER GROUP (COMMENT OUT IF NOT NEEDED)
-    -- ********************************************************************
-    AND 
-    (   
-        (
-            (domain LIKE '%canadiantire.ca%'     OR event_detail LIKE '%canadiantire.ca%')     OR
-            (domain LIKE '%walmart.ca%'          OR event_detail LIKE '%walmart.ca%')          OR
-            (domain LIKE '%amazon%'              OR event_detail LIKE '%amazon.ca%')           OR
-            (domain LIKE '%amzn%'                OR event_detail LIKE '%amazon.ca%')           OR
-            (domain LIKE '%costco.ca%'           OR event_detail LIKE '%costco.ca%')           OR
-            (domain LIKE '%sobeys.com%'          OR event_detail LIKE '%sobeys.com%')          OR
-            (domain LIKE '%petland.ca%'          OR event_detail LIKE '%petland.ca%')          OR
-            (domain LIKE '%petvalu.ca%'          OR event_detail LIKE '%petvalu.ca%')          OR
-            (domain LIKE '%petsmart.ca%'         OR event_detail LIKE '%petsmart.ca%')         OR
-            (domain LIKE '%baileyblu.com%'       OR event_detail LIKE '%baileyblu.com%')       OR
-            (domain LIKE '%chico.ca%'            OR event_detail LIKE '%chico.ca%')            OR
-            (domain LIKE '%mondou.com%'          OR event_detail LIKE '%mondou.com%')          OR
-            (domain LIKE '%pattesgriffes.com%'   OR event_detail LIKE '%pattesgriffes.com%')   OR
-            (domain LIKE '%tailblazerspets.com%' OR event_detail LIKE '%tailblazerspets.com%') OR
-            (domain LIKE '%wbu.com%'             OR event_detail LIKE '%wbu.com%')                         
-        ) 
-        AND
-        (
-            -- (event_detail LIKE '%shopping-cart%')                                   OR
-            -- (event_detail LIKE '%/cart%')                                           OR
-            -- (event_detail LIKE '%checkout%')                                        OR
-            -- (event_detail LIKE '%shop%' AND event_detail LIKE '%cart%')             OR
-            -- (event_detail LIKE '%cart%' AND event_detail LIKE '%shop%')             OR
-            
-            (event_detail LIKE '%history%' AND event_detail LIKE '%order%')         OR
-            (event_detail LIKE '%order%' AND event_detail LIKE '%history%')         OR
-            (event_detail LIKE '%recent%' AND event_detail LIKE '%order%')          OR
-            (event_detail LIKE '%order%' AND event_detail LIKE '%recent%')          OR
-            (event_detail LIKE '%account%' AND event_detail LIKE '%order%')         OR 
-            (event_detail LIKE '%order%' AND event_detail LIKE '%account%')         
-        )
-    )
-    GROUP BY 1
 ),
 
 audience AS (
@@ -121,17 +80,10 @@ audience AS (
     (
         guid IN 
         (
-            SELECT guid FROM converters
+            SELECT guid FROM intenders
         )
     )
-    AND
-    (
-        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) LIKE '%RELIGION%' OR
-        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) LIKE '%SOCIETY%' OR
-        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) LIKE '%FAMILY&PARENTING%' OR
-        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) LIKE '%SCIENCE%'
-    )
-     GROUP BY 1
+    GROUP BY 1
 ),
 
 genpop AS (
@@ -143,22 +95,15 @@ genpop AS (
     (
         date_part(year, calendar_date) = 2021 OR date_part(year, calendar_date) = 2022
     )
-    AND
-    (
-        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) LIKE '%RELIGION%' OR
-        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) LIKE '%SOCIETY%' OR
-        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) LIKE '%FAMILY&PARENTING%' OR
-        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) LIKE '%SCIENCE%'
-    )
     GROUP BY 1
 )
 
 SELECT
     a.domain            AS domain,
-    a.unique_users      AS unique_users_converter,
+    a.unique_users      AS unique_users_intenders,
     b.unique_users      AS unique_users_genpop
 FROM audience AS a INNER JOIN genpop AS b ON a.domain = b.domain
-ORDER BY 2 DESC
+ORDER BY 3 DESC
 
 
 LIMIT 50000;

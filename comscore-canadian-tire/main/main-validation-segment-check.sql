@@ -267,7 +267,26 @@ clickstream_domains AS (
         ELSE domain
         END) AS domain_group
 
-    FROM spectrum_comscore.clickstream_ca
+    FROM spectrum_comscore.clickstream_ca WHERE (
+        -- --------------------------------------------------------------------
+        -- COMPETITIVE SET 
+        -- --------------------------------------------------------------------
+        (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')         OR
+        (domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%')                   OR
+        (domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%')                     OR
+        (domain LIKE '%amzn%')                                                             OR
+        (domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%')                     OR
+        (domain LIKE '%sobeys.com%' OR event_detail LIKE '%sobeys.com%')                   OR
+        (domain LIKE '%petland.ca%' OR event_detail LIKE '%petland.ca%')                   OR
+        (domain LIKE '%petvalu.ca%' OR event_detail LIKE '%petvalu.ca%')                   OR
+        (domain LIKE '%petsmart.ca%' OR event_detail LIKE '%petsmart.ca%')                 OR
+        (domain LIKE '%baileyblu.com%'  OR event_detail LIKE '%baileyblu.com%')            OR
+        (domain LIKE '%chico.ca%' OR event_detail LIKE '%chico.ca%')                       OR
+        (domain LIKE '%mondou.com%' OR event_detail LIKE '%mondou.com%')                   OR
+        (domain LIKE '%pattesgriffes.com%' OR event_detail LIKE '%pattesgriffes.com%')     OR
+        (domain LIKE '%tailblazerspets.com%' OR event_detail LIKE '%tailblazerspets.com%') OR
+        (domain LIKE '%wbu.com%' OR event_detail LIKE '%wbu.com%')                         
+    )
 )
 
 SELECT 
@@ -288,5 +307,6 @@ FROM clickstream_domains WHERE user_id IN (
     SELECT user_id FROM converters
 )
 GROUP BY 1, 2
+
 
 LIMIT 50000;
