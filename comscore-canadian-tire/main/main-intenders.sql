@@ -83,7 +83,7 @@ AND
         -- AMAZON
         -- *************************************************
         (
-            domain LIKE '%amazon%' AND 
+            (domain LIKE '%amazon%' OR domain LIKE '%amzn%') AND 
             (
                 (
                     event_detail LIKE '%animalerie%'
