@@ -37,7 +37,7 @@ WHERE
                 )
                 OR (domain LIKE '%costco.ca%')
                 OR (
-                    domain LIKE '%sobeys.com%' AND event_detail LIKE '%pet-care%'
+                    domain LIKE '%sobeys.com%' AND event_detail LIKE '%pet-%'
                 )
             )
             AND (
