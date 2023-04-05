@@ -3,14 +3,12 @@ WHERE (
     (event_detail LIKE '%shopping-cart%')                                   OR
     (event_detail LIKE '%/cart%')                                           OR
     (event_detail LIKE '%checkout%')                                        OR
+    (event_detail LIKE '%commande%')                                        OR
     (event_detail LIKE '%shop%' AND event_detail LIKE '%cart%')                   
 ) AND guid IN (
     SELECT DISTINCT guid
     FROM spectrum_comscore.clickstream_ca
-    WHERE (date_part(year, calendar_date) = 2021OR date_part(year, calendar_date) = 2022)
-
-    AND 
-    (
+    WHERE (date_part(year, calendar_date) = 2021OR date_part(year, calendar_date) = 2022) AND (
         (
             (domain LIKE '%petland.ca%')
         OR (domain LIKE '%petvalu.ca%')
