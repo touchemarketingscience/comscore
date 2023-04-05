@@ -69,9 +69,13 @@ WITH intenders AS (
     GROUP BY 1
 ),
 
+-- ********************************************************************
+-- MAIN TABLES
+-- ********************************************************************
+
 audience AS (
     SELECT
-    zvelo_category,
+    REPLACE(zvelo_category, ' and ', '&') AS zvelo_category,
     COUNT(DISTINCT guid) as unique_users
     FROM spectrum_comscore.clickstream_ca
     WHERE 
@@ -90,7 +94,7 @@ audience AS (
 
 genpop AS (
     SELECT
-    zvelo_category,
+    REPLACE(zvelo_category, ' and ', '&') AS zvelo_category,
     COUNT(DISTINCT guid) as unique_users
     FROM spectrum_comscore.clickstream_ca
     WHERE 
@@ -100,10 +104,14 @@ genpop AS (
     GROUP BY 1
 )
 
+-- ********************************************************************
+-- OUTPUT
+-- ********************************************************************
+
 SELECT
-    a.zvelo_category AS zvelo_category,
-    a.unique_users AS unique_users_converter,
-    b.unique_users     AS unique_users_genpop
+    a.zvelo_category    AS zvelo_category,
+    a.unique_users      AS unique_users_converter,
+    b.unique_users      AS unique_users_genpop
 FROM audience AS a INNER JOIN genpop AS b ON a.zvelo_category = b.zvelo_category
 ORDER BY 2 DESC
 
