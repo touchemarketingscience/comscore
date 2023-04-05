@@ -32,13 +32,9 @@ WHERE
                     domain LIKE '%canadiantire.ca%' AND event_detail LIKE '%animalerie%' 
                 )
                 OR (domain LIKE '%walmart.ca%')
-                OR (
-                    domain LIKE '%amazon%' OR domain LIKE '%amzn%'
-                )
+                OR (domain LIKE '%amazon%' OR domain LIKE '%amzn%')
                 OR (domain LIKE '%costco.ca%')
-                OR (
-                    domain LIKE '%sobeys.com%' AND event_detail LIKE '%pet-%'
-                )
+                OR (domain LIKE '%sobeys.com%' AND event_detail LIKE '%pet%')
             )
             AND (
                 event_detail LIKE '%animalerie%'
