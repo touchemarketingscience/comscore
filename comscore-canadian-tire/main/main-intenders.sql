@@ -3,10 +3,7 @@ SELECT
         CASE
             WHEN (domain LIKE '%canadiantire.ca%') THEN 'Canadian Tire'
             WHEN (domain LIKE '%walmart.ca%') THEN 'Walmart'
-            WHEN (
-                domain LIKE '%amzn%'
-                OR domain LIKE '%amazon%'
-            ) THEN 'Amazon'
+            WHEN (domain LIKE '%amazon%') THEN 'Amazon'
             WHEN (domain LIKE '%costco.ca%') THEN 'Costco'
             WHEN (domain LIKE '%sobeys.com%') THEN 'Sobeys'
             WHEN (domain LIKE '%petland.ca%') THEN 'Pet Land'
@@ -51,15 +48,8 @@ AND
         -- CANADIAN TIRE
         -- *************************************************
         (
-            domain LIKE '%canadiantire.ca%'
-            AND 
-            (
-                (
-                    event_detail LIKE '%animalerie%'
-                    OR event_detail LIKE '%pet-care%'
-                )
-                AND 
-                (
+            domain LIKE '%canadiantire.ca%' AND (
+                (event_detail LIKE '%animalerie%' OR event_detail LIKE '%pet-care%')AND (
                     event_detail NOT LIKE '%peti%'
                     OR event_detail NOT LIKE '%peta%'
                     OR event_detail NOT LIKE '%petr%'
@@ -73,18 +63,13 @@ AND
         -- WALMART
         -- *************************************************
         (
-            domain LIKE '%walmart.ca%' AND 
-            (
-                (
-                    event_detail LIKE '%animalerie%'
-                    OR event_detail LIKE '%animaux%'
-                    OR event_detail LIKE '%pets%'
-                    OR event_detail LIKE '%pet-%'
-                    OR event_detail LIKE '%pet/%'
-                    OR event_detail LIKE '%pet\.%'
-                )
-                AND 
-                (
+            domain LIKE '%walmart.ca%' AND ((
+                event_detail LIKE '%animalerie%' 
+                OR event_detail LIKE '%animaux%' 
+                OR event_detail LIKE '%pets%' 
+                OR event_detail LIKE '%pet-%' 
+                OR event_detail LIKE '%pet/%' 
+                OR event_detail LIKE '%pet\.%') AND (
                     event_detail NOT LIKE '%peti%'
                     OR event_detail NOT LIKE '%peta%'
                     OR event_detail NOT LIKE '%petr%'
@@ -98,8 +83,7 @@ AND
         -- AMAZON
         -- *************************************************
         (
-            domain LIKE '%amazon%'
-            OR domain LIKE '%amzn%' AND 
+            domain LIKE '%amazon%' AND 
             (
                 (
                     event_detail LIKE '%animalerie%'
