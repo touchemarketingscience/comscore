@@ -103,23 +103,18 @@ AND
         -- COSTCO
         -- *************************************************
         (
-            (domain LIKE '%costco.ca%') AND
-            (
-                (
-                    event_detail LIKE '%animalerie%'
-                    OR event_detail LIKE '%animaux%'
-                    OR event_detail LIKE '%pets%'
-                    OR event_detail LIKE '%pet-%'
-                    OR event_detail LIKE '%pet/%'
-                    OR event_detail LIKE '%pet\.%'
-                )
-                AND 
-                (
-                    event_detail NOT LIKE '%peti%'
-                    OR event_detail NOT LIKE '%peta%'
-                    OR event_detail NOT LIKE '%petr%'
-                    OR event_detail NOT LIKE '%ppet%'
-                )
+            (domain LIKE '%costco.ca%') AND (
+                event_detail LIKE '%animalerie%'
+                OR event_detail LIKE '%animaux%'
+                OR event_detail LIKE '%pets%'
+                OR event_detail LIKE '%pet-%'
+                OR event_detail LIKE '%pet/%'
+                OR event_detail LIKE '%pet\.%'
+            ) AND (
+                event_detail NOT LIKE '%peti%'
+                OR event_detail NOT LIKE '%peta%'
+                OR event_detail NOT LIKE '%petr%'
+                OR event_detail NOT LIKE '%ppet%'
             )
         )
          OR
