@@ -241,31 +241,46 @@ pet_intender_machine_ids AS (
 
 total_comscore AS (
     SELECT
-    age,
-    COUNT(DISTINCT person_id) AS unique_persons
+    person_id,
+    MIN(age) AS age
     FROM spectrum_comscore.person_demographics_ca 
-    GROUP BY 1
+    GROUP BY person_id
 ),
 
 total_intenders AS (
     SELECT
-    age,
-    COUNT(DISTINCT person_id) AS unique_persons
+    person_id,
+    MIN(age) AS age
     FROM spectrum_comscore.person_demographics_ca 
 
     WHERE date_part(year, date) = 2021 OR date_part(year, date) = 2022
     AND machine_id IN (
         SELECT machine_id FROM pet_intender_machine_ids
     )
+    GROUP BY person_id
+),
 
-    GROUP BY 1
+total_comscore_age AS (
+    SELECT
+    age,
+    COUNT(DISTINCT person_id) AS unique_persons
+    FROM total_comscore
+    GROUP BY age
+),
+
+total_intenders_age AS (
+    SELECT
+    age,
+    COUNT(DISTINCT person_id) AS unique_persons
+    FROM total_intenders
+    GROUP BY age
 )
 
 SELECT 
 a.age,
 a.unique_persons AS total_comscore,
 b.unique_persons AS total_intenders
-FROM total_comscore AS a LEFT JOIN total_intenders AS b
+FROM total_comscore_age AS a LEFT JOIN total_intenders_age AS b
 ON a.age = b.age
 
 LIMIT 50000;
