@@ -243,7 +243,9 @@ websites_visited AS (
     SELECT 
     guid,
     COUNT(DISTINCT domain_group) AS visited_websites
-    FROM user_data_comscore WHERE guid IN (
+    FROM user_data_comscore WHERE 
+    domain_intender_group = 'PETS' AND
+    guid IN (
         SELECT guid FROM pet_intender_ids
     )
     GROUP BY 1
