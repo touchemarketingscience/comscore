@@ -91,19 +91,18 @@ AND
     ) 
     AND
     (
-        (event_detail LIKE '%shopping-cart%')                                   OR
-        (event_detail LIKE '%/cart%')                                           OR
-        (event_detail LIKE '%checkout%')                                        OR
-        (event_detail LIKE '%shop%' AND event_detail LIKE '%cart%')             OR
-        (event_detail LIKE '%cart%' AND event_detail LIKE '%shop%')             OR
+        -- (event_detail LIKE '%shopping-cart%')                                   OR
+        -- (event_detail LIKE '%/cart%')                                           OR
+        -- (event_detail LIKE '%checkout%')                                        OR
+        -- (event_detail LIKE '%shop%' AND event_detail LIKE '%cart%')             OR
+        -- (event_detail LIKE '%cart%' AND event_detail LIKE '%shop%')             OR
+        
+        (event_detail LIKE '%history%' AND event_detail LIKE '%order%')         OR
         (event_detail LIKE '%order%' AND event_detail LIKE '%history%')         OR
-        (event_detail LIKE '%cart%' AND event_detail LIKE '%checkout%')         OR
-        (event_detail LIKE '%checkout%' AND event_detail LIKE '%cart%')         OR
         (event_detail LIKE '%recent%' AND event_detail LIKE '%order%')          OR
         (event_detail LIKE '%order%' AND event_detail LIKE '%recent%')          OR
-        (event_detail LIKE '%account%' AND event_detail LIKE '%order%')         OR
-        (event_detail LIKE '%checkout%' AND event_detail LIKE '%confirm%')      OR
-        (event_detail LIKE '%confirm%' AND event_detail LIKE '%checkout%')
+        (event_detail LIKE '%account%' AND event_detail LIKE '%order%')         OR 
+        (event_detail LIKE '%order%' AND event_detail LIKE '%account%')         
     )
 )
 
