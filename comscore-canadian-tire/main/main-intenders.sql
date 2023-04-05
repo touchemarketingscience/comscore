@@ -38,20 +38,22 @@ WHERE (date_part(year, calendar_date) = 2021OR date_part(year, calendar_date) = 
         -- CANADIAN TIRE
         -- *************************************************
         (domain LIKE '%canadiantire.ca%' AND (
-            event_detail LIKE '%animalerie%'  
-            OR event_detail LIKE '%pet-care%')
+                event_detail LIKE '%animalerie%'  
+                OR event_detail LIKE '%pet-care%'
+            )
         )
         -- *************************************************
         -- WALMART
         -- *************************************************
         OR (
             domain LIKE '%walmart.ca%' AND (
-            event_detail LIKE '%animalerie%' 
-            OR event_detail LIKE '%animaux%' 
-            OR event_detail LIKE '%pets%' 
-            OR event_detail LIKE '%pet-%' 
-            OR event_detail LIKE '%pet/%' 
-            OR event_detail LIKE '%pet\.%')
+                event_detail LIKE '%animalerie%' 
+                OR event_detail LIKE '%animaux%' 
+                OR event_detail LIKE '%pets%' 
+                OR event_detail LIKE '%pet-%' 
+                OR event_detail LIKE '%pet/%' 
+                OR event_detail LIKE '%pet\.%'
+            )
         )
         -- *************************************************
         -- AMAZON
