@@ -1,15 +1,24 @@
 WITH user_data_comscore AS (
     SELECT
-        -- date_part(year, calendar_date) AS year,
-        -- calendar_date,
         domain,
         event_detail,
+        zvelo,
+        zvelo_category,
+        zvelo_subcategory,
         machine_id,
         guid,
+
+        -- ********************************************************************
+        -- DOMAIN GROUP
+        -- ********************************************************************
         (CASE
+        -- --------------------------------------------------------------------
+        -- COMPETITIVE SET 
+        -- --------------------------------------------------------------------
         WHEN (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')         THEN 'Canadian Tire'
         WHEN (domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%')                   THEN 'Walmart'
         WHEN (domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%')                     THEN 'Amazon'
+        WHEN (domain LIKE '%amzn%')                                                             THEN 'Amazon'
         WHEN (domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%')                     THEN 'Costco'
         WHEN (domain LIKE '%sobeys.com%' OR event_detail LIKE '%sobeys.com%')                   THEN 'Sobeys'
         WHEN (domain LIKE '%petland.ca%' OR event_detail LIKE '%petland.ca%')                   THEN 'Pet Land'
@@ -21,87 +30,107 @@ WITH user_data_comscore AS (
         WHEN (domain LIKE '%pattesgriffes.com%' OR event_detail LIKE '%pattesgriffes.com%')     THEN 'Pattes Griffes'
         WHEN (domain LIKE '%tailblazerspets.com%' OR event_detail LIKE '%tailblazerspets.com%') THEN 'Tail Blazers'
         WHEN (domain LIKE '%wbu.com%' OR event_detail LIKE '%wbu.com%')                         THEN 'Wild Birds Unlimited'
-
-        WHEN domain LIKE '%snapcha%'        THEN 'Snapchat'
-        WHEN domain LIKE '%tiktok%'         THEN 'Tiktok'
-        WHEN domain LIKE '%linkedin%'       THEN 'Linkedin'
-        WHEN domain LIKE '%twitter%'        THEN 'Twitter'
-        WHEN domain LIKE '%pinterest%'      THEN 'Pinterest'
-        WHEN domain LIKE '%reddit%'         THEN 'Reddit'
-        WHEN domain LIKE '%facebook.com%'   THEN 'Facebook'
-        WHEN domain LIKE '%fb.%'            THEN 'Facebook'
-        WHEN domain LIKE '%instagram%'      THEN 'Instagram'
-        WHEN domain LIKE '%messenger.%'     THEN 'Facebook'
-        WHEN domain LIKE '%wechat%'         THEN 'Wechat'
-        WHEN domain LIKE '%whatsapp%'       THEN 'Whatsapp'
-        WHEN domain LIKE '%tumblr%'         THEN 'Tumblr'
-        WHEN domain LIKE '%quora%'          THEN 'Quora'
-
-        WHEN domain LIKE '%youtube%'        THEN 'Youtube'
-        WHEN domain LIKE '%vimeo%'          THEN 'Vimeo'
-        WHEN domain LIKE '%twitch%'         THEN 'Twitch'
-        WHEN domain LIKE '%dailymotion%'    THEN 'Dailymotion'
-        WHEN domain LIKE '%netflix%'        THEN 'Netflix'
-
-        
-        WHEN (domain LIKE '%amzn%') THEN 'Amazon'
-        WHEN (domain LIKE '%bestbuy%') THEN 'Best Buy'
-        WHEN (domain LIKE '%costco%') THEN 'Costco'
-        WHEN (domain LIKE '%staples%') THEN 'Staples'
-        WHEN (domain LIKE '%thesource%') THEN 'The Source'
-        WHEN (domain LIKE '%homedepot%') THEN 'The Home Depot'
-        WHEN (domain LIKE '%wayfair%') THEN 'Wayfair'
-        WHEN (domain LIKE '%ikea%') THEN 'IKEA'
-        WHEN (domain LIKE '%thebay%') THEN 'Hudsons Bay'
-        WHEN (domain LIKE '%shoppers%') THEN 'Shoppers Drugmart'
-        WHEN (domain LIKE '%indigo.ca%') THEN 'Indigo Books & Music'
-        WHEN (domain LIKE '%sportchek%') THEN 'Sport Chek'
-        WHEN (domain LIKE '%lululemon%') THEN 'Lululemon'
-        WHEN (domain LIKE '%dollarama%') THEN 'Dollarama'
-        WHEN (domain LIKE '%well.ca%') THEN 'Well.ca'
-        WHEN (domain LIKE '%canadianprotein%') THEN 'Canadian Protein'
-        WHEN (domain LIKE '%mec.ca%') THEN 'MEC'
-        WHEN (domain LIKE '%nike.com%') THEN 'Nike'
-        WHEN (domain LIKE '%sephora.com%') THEN 'Sephora'
-        WHEN (domain LIKE '%roots.com%') THEN 'Roots'
-        WHEN (domain LIKE '%gapcanada%') THEN 'Gap'
-        WHEN (domain LIKE '%hudsonsbay.com%') THEN 'Hudsons Bay'
-        WHEN (domain LIKE '%bedbathandbeyond.ca%') THEN 'Bed Bath & Beyond'
-        WHEN (domain LIKE '%wellwise.ca%') THEN 'Wellwise'
-        WHEN (domain LIKE '%adidas.ca%') THEN 'Adidas'
-        WHEN (domain LIKE '%alibaba%') THEN 'Alibaba'
-        WHEN (domain LIKE '%aliexpress%') THEN 'AliExpress'
-        WHEN (domain LIKE '%sephora%') THEN 'Sephora'
-        WHEN (domain LIKE '%facebook%') THEN 'Facebook'
-        WHEN (domain LIKE '%whatsapp%') THEN 'WhatsApp'
-        WHEN (domain LIKE '%messenger.com%') THEN 'Facebook Messenger'
-        WHEN (domain LIKE '%wechat%') THEN 'WeChat'
-        WHEN (domain LIKE '%instagram%') THEN 'Instagram'
-        WHEN (domain LIKE '%tiktok') THEN 'TikTok'
-        WHEN (domain LIKE '%sina%') THEN 'Sina Weibo'
-        WHEN (domain LIKE '%twitter%') THEN 'Twitter'
-        WHEN (domain LIKE '%telegram%') THEN 'Telegram'
-        WHEN (domain LIKE '%linkedin%') THEN 'LinkedIn'
-        WHEN (domain LIKE '%reddit%') THEN 'Reddit'
-        WHEN (domain LIKE '%snapchat') THEN 'Snapchat'
-        WHEN (domain LIKE '%pinterest%') THEN 'Pinterest'
-        WHEN (domain LIKE '%discord%') THEN 'Discord'
-        WHEN (domain LIKE '%tumblr') THEN 'Tumblr'
-        WHEN (domain LIKE '%line.m%') THEN 'LINE'
-        WHEN (domain LIKE '%viber%') THEN 'Viber'
-        WHEN (domain LIKE '%telegram%') THEN 'Telegram'
-        WHEN (domain LIKE '%twitch%') THEN 'Twitch'
-        WHEN (domain LIKE '%kakaotalk%') THEN 'KakaoTalk'
-        WHEN (domain LIKE '%fb.c%') THEN 'Facebook'
+        -- --------------------------------------------------------------------
+        -- SOCIAL MEDIA
+        -- --------------------------------------------------------------------
+        WHEN domain LIKE '%snapchat%'               THEN 'Snapchat'
+        WHEN domain LIKE '%tiktok%'                 THEN 'Tiktok'
+        WHEN domain LIKE '%linkedin%'               THEN 'Linkedin'
+        WHEN domain LIKE '%twitter%'                THEN 'Twitter'
+        WHEN domain LIKE '%pinterest%'              THEN 'Pinterest'
+        WHEN domain LIKE '%reddit%'                 THEN 'Reddit'
+        WHEN domain LIKE '%facebook.com%'           THEN 'Facebook'
+        WHEN domain LIKE '%fb.%'                    THEN 'Facebook'
+        WHEN domain LIKE '%instagram%'              THEN 'Instagram'
+        WHEN domain LIKE '%tumblr%'                 THEN 'Tumblr'
+        WHEN domain LIKE '%quora%'                  THEN 'Quora'
+        WHEN (domain LIKE '%sina%')                 THEN 'Sina Weibo'
+        -- --------------------------------------------------------------------
+        -- MESSAGING APPS
+        -- --------------------------------------------------------------------
+        WHEN domain LIKE '%messenger.%'             THEN 'Messenger'
+        WHEN domain LIKE '%wechat%'                 THEN 'Wechat'
+        WHEN domain LIKE '%whatsapp%'               THEN 'Whatsapp'
+        WHEN (domain LIKE '%line.m%')               THEN 'LINE'
+        WHEN (domain LIKE '%viber%')                THEN 'Viber'
+        WHEN (domain LIKE '%telegram%')             THEN 'Telegram'
+        WHEN (domain LIKE '%kakaotalk%')            THEN 'KakaoTalk'
+        WHEN (domain LIKE '%discord%')              THEN 'Discord'
+        -- --------------------------------------------------------------------
+        -- VIDEO STREAMING
+        -- --------------------------------------------------------------------
+        WHEN domain LIKE '%youtube%'                THEN 'Youtube'
+        WHEN domain LIKE '%vimeo%'                  THEN 'Vimeo'
+        WHEN domain LIKE '%twitch%'                 THEN 'Twitch'
+        WHEN domain LIKE '%dailymotion%'            THEN 'Dailymotion'
+        WHEN domain LIKE '%netflix%'                THEN 'Netflix'
+        -- --------------------------------------------------------------------
+        -- E-COMMERCE
+        -- --------------------------------------------------------------------
+        WHEN (domain LIKE '%bestbuy%')              THEN 'Best Buy'
+        WHEN (domain LIKE '%costco%')               THEN 'Costco'
+        WHEN (domain LIKE '%staples%')              THEN 'Staples'
+        WHEN (domain LIKE '%thesource%')            THEN 'The Source'
+        WHEN (domain LIKE '%homedepot%')            THEN 'The Home Depot'
+        WHEN (domain LIKE '%wayfair%')              THEN 'Wayfair'
+        WHEN (domain LIKE '%ikea%')                 THEN 'IKEA'
+        WHEN (domain LIKE '%thebay%')               THEN 'Hudsons Bay'
+        WHEN (domain LIKE '%shoppers%')             THEN 'Shoppers Drugmart'
+        WHEN (domain LIKE '%indigo.ca%')            THEN 'Indigo Books & Music'
+        WHEN (domain LIKE '%sportchek%')            THEN 'Sport Chek'
+        WHEN (domain LIKE '%lululemon%')            THEN 'Lululemon'
+        WHEN (domain LIKE '%dollarama%')            THEN 'Dollarama'
+        WHEN (domain LIKE '%well.ca%')              THEN 'Well.ca'
+        WHEN (domain LIKE '%canadianprotein%')      THEN 'Canadian Protein'
+        WHEN (domain LIKE '%mec.ca%')               THEN 'MEC'
+        WHEN (domain LIKE '%nike.com%')             THEN 'Nike'
+        WHEN (domain LIKE '%sephora.com%')          THEN 'Sephora'
+        WHEN (domain LIKE '%roots.com%')            THEN 'Roots'
+        WHEN (domain LIKE '%gapcanada%')            THEN 'Gap'
+        WHEN (domain LIKE '%hudsonsbay.com%')       THEN 'Hudsons Bay'
+        WHEN (domain LIKE '%bedbathandbeyond.ca%')  THEN 'Bed Bath & Beyond'
+        WHEN (domain LIKE '%wellwise.ca%')          THEN 'Wellwise'
+        WHEN (domain LIKE '%adidas.ca%')            THEN 'Adidas'
+        WHEN (domain LIKE '%alibaba%')              THEN 'Alibaba'
+        WHEN (domain LIKE '%aliexpress%')           THEN 'AliExpress'
+        WHEN (domain LIKE '%sephora%')              THEN 'Sephora'
         ELSE domain
         END) AS domain_group,
+        
+       -- ********************************************************************
+        -- DOMAIN INTEREST GROUP
+        -- ********************************************************************
         (CASE 
-        WHEN UPPER(zvelo) LIKE '%PET%'OR UPPER(zvelo_category) LIKE '%PET%'OR UPPER(zvelo_subcategory) LIKE '%PET%' THEN 'PETS'
-        WHEN domain NOT LIKE '%estjet%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%animaux%' OR event_detail LIKE '%pets%' OR event_detail LIKE '%pet-%' OR event_detail LIKE '%pet/%' OR event_detail LIKE '%pet\.%' )
-        AND ( event_detail NOT LIKE '%peti%' OR event_detail NOT LIKE '%peta%' OR event_detail NOT LIKE '%petr%' OR event_detail NOT LIKE '%ppet%') THEN 'PETS'
-        ELSE 'NONE'
+        WHEN 
+            (
+                (UPPER(zvelo) LIKE '%PET%'OR UPPER(zvelo_category) LIKE '%PET%'OR UPPER(zvelo_subcategory) LIKE '%PET%') OR
+                (
+                    domain NOT LIKE '%estjet%' 
+                    AND 
+                    (
+                    event_detail LIKE '%animalerie%'    OR 
+                    event_detail LIKE '%animaux%'       OR 
+                    event_detail LIKE '%pets%'          OR 
+                    event_detail LIKE '%pet-%'          OR 
+                    event_detail LIKE '%pet/%'          OR 
+                    event_detail LIKE '%pet\.%' 
+                    ) 
+                    AND 
+                    ( 
+                    event_detail NOT LIKE '%peti%'      OR
+                    event_detail NOT LIKE '%peta%'      OR 
+                    event_detail NOT LIKE '%petr%'      OR 
+                    event_detail NOT LIKE '%ppet%'
+                    )
+                )
+            )
+            THEN 'PETS'
+            ELSE 'NONE'
         END) AS domain_interest_group,
 
+        -- ********************************************************************
+        -- DOMAIN INTENDER GROUP
+        -- ********************************************************************
         (CASE
         WHEN 
             (
@@ -147,6 +176,183 @@ WITH user_data_comscore AS (
             ELSE 'NONE'
         END) AS domain_intender_group,
 
+        (CASE
+
+        WHEN (
+
+        (event_detail LIKE '%purchase%' AND event_detail LIKE '%complete%')       OR
+        (event_detail LIKE '%payment%' AND event_detail LIKE '%complete%')        OR
+        (event_detail LIKE '%transaction%' AND event_detail LIKE '%complete%')    OR
+        (event_detail LIKE '%checkout%' AND event_detail LIKE '%complete%')       OR
+
+        (event_detail LIKE '%purchase%' AND event_detail LIKE '%success%')        OR
+        (event_detail LIKE '%payment%' AND event_detail LIKE '%success%')         OR
+        (event_detail LIKE '%transaction%' AND event_detail LIKE '%success%')     OR
+        (event_detail LIKE '%checkout%' AND event_detail LIKE '%success%')        OR
+
+        (event_detail LIKE '%purchase%' AND event_detail LIKE '%confirm%')        OR
+        (event_detail LIKE '%payment%' AND event_detail LIKE '%confirm%')         OR
+        (event_detail LIKE '%transaction%' AND event_detail LIKE '%confirm%')     OR
+        (event_detail LIKE '%checkout%' AND event_detail LIKE '%confirm%')        OR
+
+        (event_detail LIKE '%purchase%' AND event_detail LIKE '%finish%')         OR
+        (event_detail LIKE '%payment%' AND event_detail LIKE '%finish%')          OR
+        (event_detail LIKE '%transaction%' AND event_detail LIKE '%finish%')      OR
+        (event_detail LIKE '%checkout%' AND event_detail LIKE '%finish%')         OR
+
+        (event_detail LIKE '%purchase%' AND event_detail LIKE '%final%')          OR
+        (event_detail LIKE '%payment%' AND event_detail LIKE '%final%')           OR
+        (event_detail LIKE '%transaction%' AND event_detail LIKE '%final%')       OR
+        (event_detail LIKE '%checkout%' AND event_detail LIKE '%final%')          OR
+
+        (event_detail LIKE '%purchase%' AND event_detail LIKE '%done%')           OR
+        (event_detail LIKE '%payment%' AND event_detail LIKE '%done%')            OR
+        (event_detail LIKE '%transaction%' AND event_detail LIKE '%done%')        OR
+        (event_detail LIKE '%checkout%' AND event_detail LIKE '%done%')           OR
+
+        (event_detail LIKE '%purchase%' AND event_detail LIKE '%processed%')      OR
+        (event_detail LIKE '%payment%' AND event_detail LIKE '%processed%')       OR
+        (event_detail LIKE '%transaction%' AND event_detail LIKE '%processed%')   OR
+        (event_detail LIKE '%checkout%' AND event_detail LIKE '%processed%')      OR
+
+        (event_detail LIKE '%purchase%' AND event_detail LIKE '%validated%')      OR
+        (event_detail LIKE '%payment%' AND event_detail LIKE '%validated%')       OR
+        (event_detail LIKE '%transaction%' AND event_detail LIKE '%validated%')   OR
+        (event_detail LIKE '%checkout%' AND event_detail LIKE '%validated%')      OR 
+
+        (event_detail LIKE '%purchase%' AND event_detail LIKE '%thank%')          OR
+        (event_detail LIKE '%payment%' AND event_detail LIKE '%thank%')           OR
+        (event_detail LIKE '%transaction%' AND event_detail LIKE '%thank%')       OR
+        (event_detail LIKE '%checkout%' AND event_detail LIKE '%thank%')    
+        ) THEN 'CONVERTER'
+        ELSE ''
+        END) AS is_converter
+
+    FROM spectrum_comscore.clickstream_ca
+    WHERE date_part(year, calendar_date) = 2021 OR date_part(year, calendar_date) = 2022
+),
+
+comscore_total AS (
+    SELECT 
+    'General Population' as groupName,
+    COUNT(DISTINCT guid) as unique_users
+    FROM user_data_comscore
+),
+
+pet_interest AS (SELECT 
+    'Pet Interest' as groupName,
+    COUNT(DISTINCT guid) as unique_users
+    FROM user_data_comscore WHERE guid IN (
+        SELECT DISTINCT guid
+        FROM user_data_comscore
+        WHERE domain_interest_group = 'PETS'
+    )
+),
+
+pet_intenders AS (SELECT 
+    'Pet Intenders' as groupName,
+    COUNT(DISTINCT guid) as unique_users
+    FROM user_data_comscore WHERE guid IN (
+        SELECT DISTINCT guid
+        FROM user_data_comscore
+        WHERE domain_interest_group = 'PETS' AND domain_intender_group = 'PETS'
+    )
+),
+
+pet_converters AS (SELECT 
+    zvelo_category as primary_field,
+    COUNT(DISTINCT guid) as unique_users
+    FROM user_data_comscore WHERE guid IN (
+        SELECT DISTINCT guid
+        FROM user_data_comscore
+        WHERE domain_interest_group = 'PETS' AND domain_intender_group = 'PETS' AND is_converter = 'CONVERTER'
+    )
+    GROUP BY 1
+)
+
+SELECT * FROM comscore_total
+UNION ALL
+SELECT * FROM pet_interest
+UNION ALL
+SELECT * FROM pet_intenders
+UNION ALL
+SELECT * FROM pet_converters
+
+LIMIT 50000;
+
+
+/*
+pet_converter AS (SELECT 
+    zvelo_category as primary_field,
+    COUNT(DISTINCT guid) as unique_users
+    FROM user_data_comscore WHERE guid IN (
+        SELECT DISTINCT guid
+        FROM user_data_comscore
+        WHERE domain_interest_group = 'PETS' AND domain_intender_group = 'PETS' AND is_converter = 'CONVERTER'
+    )
+    GROUP BY 1
+)
+
+
+SELECT
+    a.primary_field,
+    a.unique_users as unique_users_pet_intenders,
+    b.unique_users as unique_users_comscore
+FROM pet_intenders AS a LEFT JOIN comscore_total AS b 
+ON a.primary_field = b.primary_field
+ORDER BY a.unique_users DESC
+
+
+
+
+SELECT * FROM pet_interest
+UNION ALL
+SELECT * FROM pet_intenders
+UNION ALL
+SELECT * FROM pet_converter
+
+audience_comscore AS (SELECT 
+    zvelo_category as primary_field,
+    COUNT(DISTINCT guid) as unique_users
+FROM user_data_comscore
+)
+
+SELECT
+    a.primary_field,
+    a.unique_users as unique_users_pets,
+    b.unique_users as unique_users_comscore
+FROM audience_pets AS a LEFT JOIN audience_comscore AS b 
+ON a.primary_field = b.primary_field
+ORDER BY a.unique_users DESC
+
+
+
+SELECT * FROM audience_pets
+UNION ALL
+SELECT * FROM audience_comscore
+
+
+SELECT
+    a.domain_group,
+    a.unique_users as unique_users_pets,
+    b.unique_users as unique_users_comscore
+FROM audience_pets AS a LEFT JOIN audience_comscore AS b 
+ON a.domain_group = b.domain_group
+ORDER BY a.unique_users DESC
+
+SELECT 
+    total_joined.domain,
+    total_joined.domain_group,
+    total_joined.unique_users_comscore,
+    total_joined.unique_users_pets,
+    total_comscore.total_users_comscore,
+    total_audience.total_users_audience
+FROM total_joined
+CROSS JOIN total_comscore
+CROSS JOIN total_audience
+
+
+        /*
         (CASE
         WHEN (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')         THEN 'Retail E-Commerce'
         WHEN (domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%')                   THEN 'Retail E-Commerce'
@@ -412,64 +618,5 @@ WITH user_data_comscore AS (
     ) THEN 'CONVERTER'
     ELSE ''
     END) AS is_converter
-    
-    FROM spectrum_comscore.clickstream_ca
-    WHERE date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022    
-),
 
-
-
-
-audience_pets AS (SELECT 
-    COUNT(DISTINCT guid) as unique_users
-    FROM user_data_comscore WHERE guid IN (
-        SELECT DISTINCT guid
-        FROM user_data_comscore
-        WHERE domain_interest_group = 'PETS'
-    )
-)
-
-SELECT * FROM audience_pets
-
-/*
-audience_comscore AS (SELECT 
-    zvelo_category as primary_field,
-    COUNT(DISTINCT guid) as unique_users
-FROM user_data_comscore
-)
-
-SELECT
-    a.primary_field,
-    a.unique_users as unique_users_pets,
-    b.unique_users as unique_users_comscore
-FROM audience_pets AS a LEFT JOIN audience_comscore AS b 
-ON a.primary_field = b.primary_field
-ORDER BY a.unique_users DESC
-
-
-
-SELECT * FROM audience_pets
-UNION ALL
-SELECT * FROM audience_comscore
-
-
-SELECT
-    a.domain_group,
-    a.unique_users as unique_users_pets,
-    b.unique_users as unique_users_comscore
-FROM audience_pets AS a LEFT JOIN audience_comscore AS b 
-ON a.domain_group = b.domain_group
-ORDER BY a.unique_users DESC
-
-SELECT 
-    total_joined.domain,
-    total_joined.domain_group,
-    total_joined.unique_users_comscore,
-    total_joined.unique_users_pets,
-    total_comscore.total_users_comscore,
-    total_audience.total_users_audience
-FROM total_joined
-CROSS JOIN total_comscore
-CROSS JOIN total_audience
-*/
-LIMIT 50000;
+    */
