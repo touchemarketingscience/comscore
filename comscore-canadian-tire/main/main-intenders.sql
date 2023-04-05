@@ -47,43 +47,36 @@ AND
         -- *************************************************
         -- CANADIAN TIRE
         -- *************************************************
-        (
-            domain LIKE '%canadiantire.ca%' AND (
-                (event_detail LIKE '%animalerie%' OR event_detail LIKE '%pet-care%')AND (
-                    event_detail NOT LIKE '%peti%'
-                    OR event_detail NOT LIKE '%peta%'
-                    OR event_detail NOT LIKE '%petr%'
-                    OR event_detail NOT LIKE '%ppet%'
-                )
+        (domain LIKE '%canadiantire.ca%' AND (
+            event_detail LIKE '%animalerie%'  
+            OR event_detail LIKE '%pet-care%') AND (
+                event_detail NOT LIKE '%peti%'
+                OR event_detail NOT LIKE '%peta%'
+                OR event_detail NOT LIKE '%petr%'
+                OR event_detail NOT LIKE '%ppet%'
             )
         )
-
-        OR
         -- *************************************************
         -- WALMART
         -- *************************************************
-        (
-            domain LIKE '%walmart.ca%' AND ((
-                event_detail LIKE '%animalerie%' 
-                OR event_detail LIKE '%animaux%' 
-                OR event_detail LIKE '%pets%' 
-                OR event_detail LIKE '%pet-%' 
-                OR event_detail LIKE '%pet/%' 
-                OR event_detail LIKE '%pet\.%') AND (
-                    event_detail NOT LIKE '%peti%'
-                    OR event_detail NOT LIKE '%peta%'
-                    OR event_detail NOT LIKE '%petr%'
-                    OR event_detail NOT LIKE '%ppet%'
-                )
+        OR (
+            domain LIKE '%walmart.ca%' AND (
+            event_detail LIKE '%animalerie%' 
+            OR event_detail LIKE '%animaux%' 
+            OR event_detail LIKE '%pets%' 
+            OR event_detail LIKE '%pet-%' 
+            OR event_detail LIKE '%pet/%' 
+            OR event_detail LIKE '%pet\.%') AND (
+                event_detail NOT LIKE '%peti%'
+                OR event_detail NOT LIKE '%peta%'
+                OR event_detail NOT LIKE '%petr%'
+                OR event_detail NOT LIKE '%ppet%'
             )
         )
-
-         OR
         -- *************************************************
         -- AMAZON
         -- *************************************************
-        (
-            (domain LIKE '%amazon%' OR domain LIKE '%amzn%') AND (
+        OR ((domain LIKE '%amazon%' OR domain LIKE '%amzn%') AND (
                 event_detail LIKE '%animalerie%'
                 OR event_detail LIKE '%animaux%'
                 OR event_detail LIKE '%pets%'
@@ -97,13 +90,10 @@ AND
                 OR event_detail NOT LIKE '%ppet%'
             )
         )
-
-        OR
         -- *************************************************
         -- COSTCO
         -- *************************************************
-        (
-            (domain LIKE '%costco.ca%') AND (
+        OR (domain LIKE '%costco.ca%' AND (
                 event_detail LIKE '%animalerie%'
                 OR event_detail LIKE '%animaux%'
                 OR event_detail LIKE '%pets%'
@@ -117,19 +107,11 @@ AND
                 OR event_detail NOT LIKE '%ppet%'
             )
         )
-         OR
         -- *************************************************
         -- SOBEYS
         -- *************************************************
-        (
-            domain LIKE '%sobeys.com%' AND
-            (
-                (
-                    event_detail LIKE '%animalerie%'
-                    OR event_detail LIKE '%pet%'
-                )
-                AND 
-                (
+        OR (domain LIKE '%sobeys.com%' AND (
+                (event_detail LIKE '%animalerie%' OR event_detail LIKE '%pet%') AND ( 
                     event_detail NOT LIKE '%peti%'
                     OR event_detail NOT LIKE '%peta%'
                     OR event_detail NOT LIKE '%petr%'
@@ -139,12 +121,10 @@ AND
         )
     )
 )
-
-    
 GROUP BY
     1
 ORDER BY
-    2 desc
+2 DESC
 LIMIT
     10000;
 
