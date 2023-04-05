@@ -39,12 +39,7 @@ WHERE (date_part(year, calendar_date) = 2021OR date_part(year, calendar_date) = 
         -- *************************************************
         (domain LIKE '%canadiantire.ca%' AND (
             event_detail LIKE '%animalerie%'  
-            OR event_detail LIKE '%pet-care%') AND (
-                event_detail NOT LIKE '%peti%'
-                OR event_detail NOT LIKE '%peta%'
-                OR event_detail NOT LIKE '%petr%'
-                OR event_detail NOT LIKE '%ppet%'
-            )
+            OR event_detail LIKE '%pet-care%')
         )
         -- *************************************************
         -- WALMART
@@ -56,12 +51,7 @@ WHERE (date_part(year, calendar_date) = 2021OR date_part(year, calendar_date) = 
             OR event_detail LIKE '%pets%' 
             OR event_detail LIKE '%pet-%' 
             OR event_detail LIKE '%pet/%' 
-            OR event_detail LIKE '%pet\.%') AND (
-                event_detail NOT LIKE '%peti%'
-                OR event_detail NOT LIKE '%peta%'
-                OR event_detail NOT LIKE '%petr%'
-                OR event_detail NOT LIKE '%ppet%'
-            )
+            OR event_detail LIKE '%pet\.%')
         )
         -- *************************************************
         -- AMAZON
@@ -73,11 +63,6 @@ WHERE (date_part(year, calendar_date) = 2021OR date_part(year, calendar_date) = 
                 OR event_detail LIKE '%pet-%'
                 OR event_detail LIKE '%pet/%'
                 OR event_detail LIKE '%pet\.%'
-            ) AND (
-                event_detail NOT LIKE '%peti%'
-                OR event_detail NOT LIKE '%peta%'
-                OR event_detail NOT LIKE '%petr%'
-                OR event_detail NOT LIKE '%ppet%'
             )
         )
         -- *************************************************
@@ -90,23 +75,13 @@ WHERE (date_part(year, calendar_date) = 2021OR date_part(year, calendar_date) = 
                 OR event_detail LIKE '%pet-%'
                 OR event_detail LIKE '%pet/%'
                 OR event_detail LIKE '%pet\.%'
-            ) AND (
-                event_detail NOT LIKE '%peti%'
-                OR event_detail NOT LIKE '%peta%'
-                OR event_detail NOT LIKE '%petr%'
-                OR event_detail NOT LIKE '%ppet%'
             )
         )
         -- *************************************************
         -- SOBEYS
         -- *************************************************
         OR (domain LIKE '%sobeys.com%' AND (
-                (event_detail LIKE '%animalerie%' OR event_detail LIKE '%pet%') AND ( 
-                    event_detail NOT LIKE '%peti%'
-                    OR event_detail NOT LIKE '%peta%'
-                    OR event_detail NOT LIKE '%petr%'
-                    OR event_detail NOT LIKE '%ppet%'
-                )
+                (event_detail LIKE '%animalerie%' OR event_detail LIKE '%pet%')
             )
         )
     )
