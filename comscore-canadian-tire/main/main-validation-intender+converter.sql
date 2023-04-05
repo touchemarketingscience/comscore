@@ -1,27 +1,6 @@
 
 SELECT
     COUNT(DISTINCT guid) as unique_users
-    -- ********************************************************************
-    -- COMPETITORS
-    -- ********************************************************************
-    -- (CASE
-    -- WHEN (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')         THEN 'Canadian Tire'
-    -- WHEN (domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%')                   THEN 'Walmart'
-    -- WHEN (domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%')                     THEN 'Amazon'
-    -- WHEN (domain LIKE '%amzn%')                                                             THEN 'Amazon'
-    -- WHEN (domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%')                     THEN 'Costco'
-    -- WHEN (domain LIKE '%sobeys.com%' OR event_detail LIKE '%sobeys.com%')                   THEN 'Sobeys'
-    -- WHEN (domain LIKE '%petland.ca%' OR event_detail LIKE '%petland.ca%')                   THEN 'Pet Land'
-    -- WHEN (domain LIKE '%petvalu.ca%' OR event_detail LIKE '%petvalu.ca%')                   THEN 'Pet Valu'
-    -- WHEN (domain LIKE '%petsmart.ca%' OR event_detail LIKE '%petsmart.ca%')                 THEN 'Pet Smart'
-    -- WHEN (domain LIKE '%baileyblu.com%'  OR event_detail LIKE '%baileyblu.com%')            THEN 'Bailey Blu'
-    -- WHEN (domain LIKE '%chico.ca%' OR event_detail LIKE '%chico.ca%')                       THEN 'Chico'
-    -- WHEN (domain LIKE '%mondou.com%' OR event_detail LIKE '%mondou.com%')                   THEN 'Mondou'
-    -- WHEN (domain LIKE '%pattesgriffes.com%' OR event_detail LIKE '%pattesgriffes.com%')     THEN 'Pattes Griffes'
-    -- WHEN (domain LIKE '%tailblazerspets.com%' OR event_detail LIKE '%tailblazerspets.com%') THEN 'Tail Blazers'
-    -- WHEN (domain LIKE '%wbu.com%' OR event_detail LIKE '%wbu.com%')                         THEN 'Wild Birds Unlimited'
-    -- END) AS competitor
-    
 FROM spectrum_comscore.clickstream_ca
 
 -- ********************************************************************
@@ -35,7 +14,7 @@ AND
 (   
     
     -- ********************************************************************
-    -- DOMAIN INTENDER GROUP - 
+    -- ONLY INCLUDE USERS WHO HAVE VISITED A COMPETITOR SITE
     -- ********************************************************************
     guid IN 
     (
@@ -88,27 +67,6 @@ AND
         )
     )
 )
--- ********************************************************************
--- ONLY INCLUDE USERS WHO HAVE VISITED A COMPETITOR SITE
--- ********************************************************************
-AND 
-(
-    (domain LIKE '%canadiantire.ca%'     OR event_detail LIKE '%canadiantire.ca%')     OR
-    (domain LIKE '%walmart.ca%'          OR event_detail LIKE '%walmart.ca%')          OR
-    (domain LIKE '%amazon%'              OR event_detail LIKE '%amazon.ca%')           OR
-    (domain LIKE '%amzn%'                OR event_detail LIKE '%amazon.ca%')           OR
-    (domain LIKE '%costco.ca%'           OR event_detail LIKE '%costco.ca%')           OR
-    (domain LIKE '%sobeys.com%'          OR event_detail LIKE '%sobeys.com%')          OR
-    (domain LIKE '%petland.ca%'          OR event_detail LIKE '%petland.ca%')          OR
-    (domain LIKE '%petvalu.ca%'          OR event_detail LIKE '%petvalu.ca%')          OR
-    (domain LIKE '%petsmart.ca%'         OR event_detail LIKE '%petsmart.ca%')         OR
-    (domain LIKE '%baileyblu.com%'       OR event_detail LIKE '%baileyblu.com%')       OR
-    (domain LIKE '%chico.ca%'            OR event_detail LIKE '%chico.ca%')            OR
-    (domain LIKE '%mondou.com%'          OR event_detail LIKE '%mondou.com%')          OR
-    (domain LIKE '%pattesgriffes.com%'   OR event_detail LIKE '%pattesgriffes.com%')   OR
-    (domain LIKE '%tailblazerspets.com%' OR event_detail LIKE '%tailblazerspets.com%') OR
-    (domain LIKE '%wbu.com%'             OR event_detail LIKE '%wbu.com%')                         
-) 
 
 -- ********************************************************************
 -- DOMAIN CONVERTER GROUP (COMMENT OUT IF NOT NEEDED)
