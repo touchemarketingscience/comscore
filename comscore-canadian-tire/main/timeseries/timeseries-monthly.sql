@@ -75,26 +75,29 @@ WITH unique_intender_data AS (
 
 total_intenders AS (
     SELECT
-        date_part(year, calendar_date) AS join_field,
+        date_part(year, calendar_date) AS join_field_a,
+        date_part(month, calendar_date) AS join_field_b,
         COUNT(DISTINCT guid) AS unique_users
     FROM unique_intender_data
-    GROUP BY 1
+    GROUP BY 1, 2
 ),
 
 total_genpop AS (
      SELECT
-        date_part(year, calendar_date) AS join_field,
+        date_part(year, calendar_date) AS join_field_a,
+        date_part(month, calendar_date) AS join_field_b,
         COUNT(DISTINCT guid) AS unique_users
     FROM spectrum_comscore.clickstream_ca
-    GROUP BY 1
+    GROUP BY 1, 2
 ),
 
 total_output AS (
     SELECT 
-        a.join_field,
+        a.join_field_a,
+        a.join_field_b,
         a.unique_users AS total_intenders,
         b.unique_users AS total_genpop
-    FROM total_intenders AS a INNER JOIN total_genpop AS b ON a.join_field = b.join_field
+    FROM total_intenders AS a INNER JOIN total_genpop AS b ON a.join_field_a = b.join_field_a AND a.join_field_b = b.join_field_b
 ),
 
 
@@ -115,7 +118,8 @@ ref_intenders AS (
 )
 
 SELECT
-    a.join_field AS year,
+    a.join_field_a AS year,
+    a.join_field_b AS month,
     a.total_intenders AS total_intenders,
     a.total_genpop AS total_genpop,
     b.unique_users AS ref_genpop,
