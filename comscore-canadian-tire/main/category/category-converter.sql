@@ -110,7 +110,7 @@ WITH converters AS (
 
 audience AS (
     SELECT
-    REPLACE(zvelo_category, ' and ', ' & ') as zvelo_category,
+    UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS zvelo_category,
     COUNT(DISTINCT guid) as unique_users
     FROM spectrum_comscore.clickstream_ca
     WHERE 
@@ -129,7 +129,7 @@ audience AS (
 
 genpop AS (
     SELECT
-    REPLACE(zvelo_category, ' and ', ' & ') as zvelo_category,
+    UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS zvelo_category,
     COUNT(DISTINCT guid) as unique_users
     FROM spectrum_comscore.clickstream_ca
     WHERE 
