@@ -2,8 +2,7 @@ SELECT
     (CASE 
         WHEN (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')         THEN 'Canadian Tire'
         WHEN (domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%')                   THEN 'Walmart'
-        WHEN (domain LIKE '%amazon%' OR event_detail LIKE '%amazon%')                           THEN 'Amazon'
-        WHEN (domain LIKE '%amzn%')                                                             THEN 'Amazon'
+        WHEN (domain LIKE '%amzn%' OR domain LIKE '%amazon%' OR event_detail LIKE '%amazon%')   THEN 'Amazon'
         WHEN (domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%')                     THEN 'Costco'
         WHEN (domain LIKE '%sobeys.com%' OR event_detail LIKE '%sobeys.com%')                   THEN 'Sobeys'
         WHEN (domain LIKE '%petland.ca%' OR event_detail LIKE '%petland.ca%')                   THEN 'Pet Land'
@@ -33,10 +32,13 @@ WHERE
                     domain LIKE '%canadiantire.ca%' AND event_detail LIKE '%animalerie%' 
                 )
                 OR (domain LIKE '%walmart.ca%')
-                OR (domain LIKE '%amazon%')
-                OR (domain LIKE '%amzn%')
+                OR (
+                    domain LIKE '%amazon%' OR domain LIKE '%amzn%'
+                )
                 OR (domain LIKE '%costco.ca%')
-                OR (domain LIKE '%sobeys.com%')
+                OR (
+                    domain LIKE '%sobeys.com%' AND event_detail LIKE '%pet-care%'
+                )
             )
             AND (
                 event_detail LIKE '%animalerie%'
