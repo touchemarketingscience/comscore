@@ -1,19 +1,19 @@
 SELECT
     (CASE 
-        WHEN (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')         THEN 'Canadian Tire'
-        WHEN (domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%')                   THEN 'Walmart'
-        WHEN (domain LIKE '%amzn%' OR domain LIKE '%amazon%' OR event_detail LIKE '%amazon%')   THEN 'Amazon'
-        WHEN (domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%')                     THEN 'Costco'
-        WHEN (domain LIKE '%sobeys.com%' OR event_detail LIKE '%sobeys.com%')                   THEN 'Sobeys'
-        WHEN (domain LIKE '%petland.ca%' OR event_detail LIKE '%petland.ca%')                   THEN 'Pet Land'
-        WHEN (domain LIKE '%petvalu.ca%' OR event_detail LIKE '%petvalu.ca%')                   THEN 'Pet Valu'
-        WHEN (domain LIKE '%petsmart.ca%' OR event_detail LIKE '%petsmart.ca%')                 THEN 'Pet Smart'
-        WHEN (domain LIKE '%baileyblu.com%'  OR event_detail LIKE '%baileyblu.com%')            THEN 'Bailey Blu'
-        WHEN (domain LIKE '%chico.ca%' OR event_detail LIKE '%chico.ca%')                       THEN 'Chico'
-        WHEN (domain LIKE '%mondou.com%' OR event_detail LIKE '%mondou.com%')                   THEN 'Mondou'
-        WHEN (domain LIKE '%pattesgriffes.com%' OR event_detail LIKE '%pattesgriffes.com%')     THEN 'Pattes Griffes'
-        WHEN (domain LIKE '%tailblazerspets.com%' OR event_detail LIKE '%tailblazerspets.com%') THEN 'Tail Blazers'
-        WHEN (domain LIKE '%wbu.com%' OR event_detail LIKE '%wbu.com%')                         THEN 'Wild Birds Unlimited'
+        WHEN (domain LIKE '%canadiantire.ca%')         THEN 'Canadian Tire'
+        WHEN (domain LIKE '%walmart.ca%')                   THEN 'Walmart'
+        WHEN (domain LIKE '%amzn%' OR domain LIKE '%amazon%')   THEN 'Amazon'
+        WHEN (domain LIKE '%costco.ca%')                     THEN 'Costco'
+        WHEN (domain LIKE '%sobeys.com%')                   THEN 'Sobeys'
+        WHEN (domain LIKE '%petland.ca%')                   THEN 'Pet Land'
+        WHEN (domain LIKE '%petvalu.ca%')                   THEN 'Pet Valu'
+        WHEN (domain LIKE '%petsmart.ca%')                 THEN 'Pet Smart'
+        WHEN (domain LIKE '%baileyblu.com%')            THEN 'Bailey Blu'
+        WHEN (domain LIKE '%chico.ca%')                       THEN 'Chico'
+        WHEN (domain LIKE '%mondou.com%')                   THEN 'Mondou'
+        WHEN (domain LIKE '%pattesgriffes.com%')     THEN 'Pattes Griffes'
+        WHEN (domain LIKE '%tailblazerspets.com%') THEN 'Tail Blazers'
+        WHEN (domain LIKE '%wbu.com%')                         THEN 'Wild Birds Unlimited'
         ELSE domain
     END) AS domain_group,
     count (DISTINCT guid)
@@ -64,6 +64,21 @@ WHERE
         OR (domain LIKE '%pattesgriffes.com%')
         OR (domain LIKE '%tailblazerspets.com%')
         OR (domain LIKE '%wbu.com%')
+    )
+    AND
+    (
+        -- (event_detail LIKE '%shopping-cart%')                                   OR
+        -- (event_detail LIKE '%/cart%')                                           OR
+        -- (event_detail LIKE '%checkout%')                                        OR
+        -- (event_detail LIKE '%shop%' AND event_detail LIKE '%cart%')             OR
+        -- (event_detail LIKE '%cart%' AND event_detail LIKE '%shop%')             OR
+        
+        (event_detail LIKE '%history%' AND event_detail LIKE '%order%')         OR
+        (event_detail LIKE '%order%' AND event_detail LIKE '%history%')         OR
+        (event_detail LIKE '%recent%' AND event_detail LIKE '%order%')          OR
+        (event_detail LIKE '%order%' AND event_detail LIKE '%recent%')          OR
+        (event_detail LIKE '%account%' AND event_detail LIKE '%order%')         OR 
+        (event_detail LIKE '%order%' AND event_detail LIKE '%account%')         
     )
 GROUP BY
     1
