@@ -237,13 +237,31 @@ pet_intender_ids AS (
     SELECT DISTINCT guid
     FROM user_data_comscore
     WHERE domain_intender_group = 'PETS'
+),
+
+total_comscore AS (
+    SELECT
+    calendar_date AS date,
+    COUNT(DISTINCT guid) AS unique_users
+    FROM user_data_comscore
+    GROUP BY calendar_date
+),
+
+total_pet_intenders AS (
+    SELECT
+    calendar_date AS date,
+    COUNT(DISTINCT guid) AS unique_users
+    FROM user_data_comscore
+    WHERE domain_intender_group = 'PETS'
+    GROUP BY calendar_date
 )
 
-SELECT 
-COUNT(DISTINCT guid) AS unique_users
-FROM user_data_comscore WHERE guid IN (
-    SELECT guid FROM pet_intender_ids
-)
+SELECT
+a.date,
+a.unique_users AS total_unique_users,
+b.unique_users AS pet_intenders
+FROM total_comscore a LEFT JOIN total_pet_intenders b ON a.date = b.date
+ORDER BY a.date ASC
 
 LIMIT 50000;
 
