@@ -80,11 +80,10 @@ SELECT
     COUNT(DISTINCT guid) AS unique_users,
     SUM(total_visit_count) AS total_visits,
     SUM(unique_visit_count) AS unique_visits,
-    SUM(repeat_visit_count) AS repeat_visits,
-    SUM(repeat_visit_count) / COUNT(DISTINCT guid) AS avg_repeat_visits
+    SUM(repeat_visit_count) AS repeat_visits
 FROM repeat_visits
 GROUP BY domain_group
-ORDER BY avg_repeat_visits DESC
+ORDER BY repeat_visits DESC
 ),
 
 -- *********************************************************************************************
@@ -113,7 +112,6 @@ a.unique_users,
 a.total_visits,
 a.unique_visits,
 a.repeat_visits,
-a.avg_repeat_visits,
 b.unique_users AS ref_intenders,
 c.unique_users AS ref_genpop
 FROM total_output AS a
