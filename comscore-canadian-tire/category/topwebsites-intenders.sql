@@ -3,24 +3,7 @@ WITH unique_intender_data AS (
     calendar_date,
     zvelo_category,
     guid,
-    (CASE
-    WHEN (domain LIKE '%canadiantire.ca%') THEN 'Canadian Tire'
-    WHEN (domain LIKE '%walmart.ca%') THEN 'Walmart'
-    WHEN (domain LIKE '%amazon%') THEN 'Amazon'
-    WHEN (domain LIKE '%costco.ca%') THEN 'Costco'
-    WHEN (domain LIKE '%sobeys.com%') THEN 'Sobeys'
-    WHEN (domain LIKE '%petland.ca%') THEN 'Pet Land'
-    WHEN (domain LIKE '%petvalu.ca%') THEN 'Pet Valu'
-    WHEN (domain LIKE '%petsmart.ca%') THEN 'Pet Smart'
-    WHEN (domain LIKE '%baileyblu.com%') THEN 'Bailey Blu'
-    WHEN (domain LIKE '%chico.ca%') THEN 'Chico'
-    WHEN (domain LIKE '%mondou.com%') THEN 'Mondou'
-    WHEN (domain LIKE '%pattesgriffes.com%') THEN 'Pattes Griffes'
-    WHEN (domain LIKE '%tailblazerspets.com%') THEN 'Tail Blazers'
-    WHEN (domain LIKE '%wbu.com%') THEN 'Wild Birds Unlimited'
-    ELSE domain
-    END
-    ) AS domain_group
+    domain
     FROM spectrum_comscore.clickstream_ca
     WHERE (date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022) AND
     ((domain LIKE '%petland.ca%'
@@ -49,7 +32,7 @@ intender_list AS (
 
 total_intenders AS (
     SELECT
-        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
+        domain AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
     FROM spectrum_comscore.clickstream_ca
     WHERE (date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022) AND guid IN (
@@ -60,7 +43,7 @@ total_intenders AS (
 
 total_genpop AS (
      SELECT
-        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
+        domain AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
     FROM spectrum_comscore.clickstream_ca WHERE (date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022)
     GROUP BY 1
@@ -97,7 +80,7 @@ ref_intenders AS (
 
 SELECT
 
-    a.join_field_a          AS zvelo_category,
+    a.join_field_a          AS domain_group,
     a.total_intenders       AS total_intenders,
     a.total_genpop          AS total_genpop,
     b.unique_users          AS ref_intenders,
