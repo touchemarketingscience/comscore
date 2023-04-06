@@ -1,4 +1,13 @@
-WITH comscore_cleaned AS (SELECT 
+-- COMSCORE - CONVERTER DEFINITION
+
+
+-- **************************************************************************
+-- COMSCORE - INTENDERS ONLY
+--      @GUID
+--      @DOMAIN GROUP (CLEANED DOMAIN)
+-- **************************************************************************
+
+WITH comscore_cleaned_intenders_only AS (SELECT 
 
 guid,
 
@@ -41,35 +50,35 @@ OR (domain LIKE 'wbu.c%') OR
 
 ),
 
-intender_list AS (
-    SELECT DISTINCT guid FROM comscore_cleaned
-),
-
 -- **************************************************************************
 -- PETSMART CONVERTERS 
 -- **************************************************************************
 converter_list_petsmart AS (
     SELECT DISTINCT guid FROM spectrum_comscore.clickstream_ca
-    WHERE (date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022) AND guid IN (SELECT guid FROM intender_list) AND (domain LIKE '%petsmart.c%') AND (
-            (event_detail LIKE '%shopping-cart%')                                   OR
-            (event_detail LIKE '%/cart%')                                           OR
-            (event_detail LIKE '%checkout%')                                        OR
-            (event_detail LIKE '%shop%' AND event_detail LIKE '%cart%')             OR
-            (event_detail LIKE '%cart%' AND event_detail LIKE '%shop%')             OR
-            (event_detail LIKE '%history%' AND event_detail LIKE '%order%')         OR
-            (event_detail LIKE '%order%' AND event_detail LIKE '%history%')         OR
-            (event_detail LIKE '%recent%' AND event_detail LIKE '%order%')          OR
-            (event_detail LIKE '%order%' AND event_detail LIKE '%recent%')          OR
-            (event_detail LIKE '%account%' AND event_detail LIKE '%order%')         OR 
-            (event_detail LIKE '%order%' AND event_detail LIKE '%account%')         
+    WHERE (date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022) AND (domain LIKE '%petsmart.c%') AND (
+        (event_detail LIKE '%shopping-cart%')                                   OR
+        (event_detail LIKE '%/cart%')                                           OR
+        (event_detail LIKE '%checkout%')                                        OR
+        (event_detail LIKE '%shop%' AND event_detail LIKE '%cart%')             OR
+        (event_detail LIKE '%cart%' AND event_detail LIKE '%shop%')             OR
+        (event_detail LIKE '%history%' AND event_detail LIKE '%order%')         OR
+        (event_detail LIKE '%order%' AND event_detail LIKE '%history%')         OR
+        (event_detail LIKE '%recent%' AND event_detail LIKE '%order%')          OR
+        (event_detail LIKE '%order%' AND event_detail LIKE '%recent%')          OR
+        (event_detail LIKE '%account%' AND event_detail LIKE '%order%')         OR 
+        (event_detail LIKE '%order%' AND event_detail LIKE '%account%')         
     )
 ),
+
+-- **************************************************************************
+-- INTENDER AND CONVERTER COLUMNS
+-- **************************************************************************
 
 intender_group AS (
     SELECT
     domain_group,
     COUNT(DISTINCT guid) AS intenders
-    FROM comscore_cleaned
+    FROM comscore_cleaned_intenders_only
     GROUP BY 1
 ),
 
@@ -77,13 +86,36 @@ converter_group AS (
     SELECT
     domain_group,
     COUNT(DISTINCT guid) AS converters
-    FROM comscore_cleaned
+    FROM comscore_cleaned_intenders_only
     WHERE guid IN (SELECT guid FROM converter_list_petsmart)
     GROUP BY 1
 )
+
+-- **************************************************************************
+-- OUTPUT TABLE
+-- **************************************************************************
 
 SELECT
 a.domain_group,
 a.intenders,
 b.converters
 FROM intender_group AS a LEFT JOIN converter_group AS b ON a.domain_group = b.domain_group
+
+/* RESULT:
+domain_group            intenders	converters
+Pet Smart	            3434	    514
+Mondou	                1417	    13
+Walmart	                1262	    69
+Pet Valu	            1166	    152
+Amazon	                1067	    67
+Costco	                356	         33
+Canadian Tire	        323	        46
+Pet Land	            83	        34
+Wild Birds Unlimited	90	         5
+Chico	                87	
+Sobeys	                20	        1
+Pattes Griffes	        14	
+Tail Blazers	        8	        2
+Bailey Blu	            1	
+
+*/
