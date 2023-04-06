@@ -78,12 +78,30 @@ converter_list AS (
         (event_detail LIKE '%account%' AND event_detail LIKE '%order%')         OR 
         (event_detail LIKE '%order%' AND event_detail LIKE '%account%')         
     )
+),
+
+intender_group AS (
+    SELECT
+    domain_group,
+    COUNT(DISTINCT guid) AS intenders
+    FROM non_unique_intender_data
+    GROUP BY 1
+),
+
+converter_group AS (
+    SELECT
+    domain_group,
+    COUNT(DISTINCT guid) AS converters
+    FROM non_unique_intender_data
+    WHERE guid IN (SELECT guid FROM converter_list)
+    GROUP BY 1
 )
 
 SELECT
-COUNT(DISTINCT guid) AS converters
-FROM non_unique_intender_data
-WHERE guid IN (SELECT guid FROM converter_list)
+a.domain_group,
+a.intenders,
+b.converters
+FROM intender_group AS a LEFT JOIN converter_group AS b ON a.domain_group = b.domain_group
 
 
 /*
