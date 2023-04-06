@@ -1,4 +1,4 @@
-WITH unique_intender_data AS (
+WITH non_unique_intender_data AS (
     SELECT 
     calendar_date,
     guid,
@@ -46,7 +46,7 @@ total_website_visit_count_per_intender_1ONLY AS (
     SELECT
         guid,
         COUNT(DISTINCT domain_group) AS domain_group_count
-    FROM unique_intender_data
+    FROM non_unique_intender_data
     GROUP BY 1
     HAVING COUNT(DISTINCT domain_group) = 1
 ),
@@ -55,7 +55,7 @@ total_website_visit_count_per_intender_2PLUS AS (
     SELECT
         guid,
         COUNT(DISTINCT domain_group) AS domain_group_count
-    FROM unique_intender_data
+    FROM non_unique_intender_data
     GROUP BY 1
     HAVING COUNT(DISTINCT domain_group) >= 2
 ),
@@ -64,7 +64,7 @@ total_output_1ONLY AS (
     SELECT 
     domain_group,
     COUNT(DISTINCT guid) AS unique_users
-    FROM unique_intender_data WHERE guid IN (
+    FROM non_unique_intender_data WHERE guid IN (
         SELECT guid FROM total_website_visit_count_per_intender_1ONLY
     )
     GROUP BY 1
@@ -74,7 +74,7 @@ total_output_2ONLY AS (
     SELECT 
     domain_group,
     COUNT(DISTINCT guid) AS unique_users
-    FROM unique_intender_data WHERE guid IN (
+    FROM non_unique_intender_data WHERE guid IN (
         SELECT guid FROM total_website_visit_count_per_intender_2PLUS
     )
     GROUP BY 1
@@ -100,7 +100,7 @@ ref_genpop AS (
 
 ref_intenders AS (
     SELECT COUNT(DISTINCT guid) AS unique_users
-    FROM unique_intender_data
+    FROM non_unique_intender_data
     WHERE date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022
 )
 
