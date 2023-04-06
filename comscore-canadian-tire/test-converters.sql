@@ -39,7 +39,7 @@ count (DISTINCT guid)
 
 FROM spectrum_comscore.clickstream_ca
 
-WHERE (date_part(year, calendar_date) = 2021 OR date_part(year, calendar_date) = 2022) AND
+WHERE (date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022) AND
 
 ((domain LIKE 'petland.c%')
 OR (domain LIKE '%petvalu.c%')
