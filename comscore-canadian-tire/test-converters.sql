@@ -56,8 +56,8 @@ OR (domain LIKE 'wbu.c%') OR
 (domain LIKE '%costco.ca%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%animaux%' OR event_detail LIKE '%pets%' OR event_detail LIKE '%pet-%' OR event_detail LIKE '%pet/%' OR event_detail LIKE '%pet\.%')) OR
 (domain LIKE '%sobeys.com%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%pet%'))) 
 
-GROUP BY 1
-ORDER BY 2 DESC
+GROUP BY 1, 2
+ORDER BY 1 ASC
 
 /*
 Domain                  Intenders
