@@ -5,71 +5,20 @@ WITH unique_intender_data AS (
     FROM
         spectrum_comscore.clickstream_ca
     WHERE (date_part(year, calendar_date) >= 2019 AND date_part(year, calendar_date) <= 2022) AND (
-        (  (domain LIKE '%petland.ca%')
-            OR (domain LIKE '%petvalu.ca%')
-            OR (domain LIKE '%petsmart.ca%')
-            OR (domain LIKE '%baileyblu.com%')
-            OR (domain LIKE '%chico.ca%')
-            OR (domain LIKE '%mondou.com%')
-            OR (domain LIKE '%pattesgriffes.com%')
-            OR (domain LIKE '%tailblazerspets.com%')
-            OR (domain LIKE '%wbu.com%')
-        )
-        OR
-        (
-            -- *************************************************
-            -- CANADIAN TIRE
-            -- *************************************************
-            (domain LIKE '%canadiantire.ca%' AND (
-                    event_detail LIKE '%animalerie%'  
-                    OR event_detail LIKE '%pet-care%'
-                )
-            )
-            -- *************************************************
-            -- WALMART
-            -- *************************************************
-            OR (
-                domain LIKE '%walmart.ca%' AND (
-                    event_detail LIKE '%animalerie%' 
-                    OR event_detail LIKE '%animaux%' 
-                    OR event_detail LIKE '%pets%' 
-                    OR event_detail LIKE '%pet-%' 
-                    OR event_detail LIKE '%pet/%' 
-                    OR event_detail LIKE '%pet\.%'
-                )
-            )
-            -- *************************************************
-            -- AMAZON
-            -- *************************************************
-            OR ((domain LIKE '%amazon%' OR domain LIKE '%amzn%') AND (
-                    event_detail LIKE '%animalerie%'
-                    OR event_detail LIKE '%animaux%'
-                    OR event_detail LIKE '%pets%'
-                    OR event_detail LIKE '%pet-%'
-                    OR event_detail LIKE '%pet/%'
-                    OR event_detail LIKE '%pet\.%'
-                )
-            )
-            -- *************************************************
-            -- COSTCO
-            -- *************************************************
-            OR (domain LIKE '%costco.ca%' AND (
-                    event_detail LIKE '%animalerie%'
-                    OR event_detail LIKE '%animaux%'
-                    OR event_detail LIKE '%pets%'
-                    OR event_detail LIKE '%pet-%'
-                    OR event_detail LIKE '%pet/%'
-                    OR event_detail LIKE '%pet\.%'
-                )
-            )
-            -- *************************************************
-            -- SOBEYS
-            -- *************************************************
-            OR (domain LIKE '%sobeys.com%' AND (
-                    (event_detail LIKE '%animalerie%' OR event_detail LIKE '%pet%')
-                )
-            )
-        )
+    ((domain LIKE 'petland.c%')
+    OR (domain LIKE '%petvalu.c%')
+    OR (domain LIKE '%petsmart.c%')
+    OR (domain LIKE '%baileyblu.com%')
+    OR (domain LIKE 'chico.c%' OR domain LIKE '%boutiquedanimauxchico.com%')
+    OR (domain LIKE 'mondou.c%')
+    OR (domain LIKE '%pattesgriffes.com%')
+    OR (domain LIKE '%tailblazerspets.com%')
+    OR (domain LIKE 'wbu.c%') OR
+    (domain LIKE '%canadiantire.ca%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%pet-care%')) OR
+    (domain LIKE '%walmart.ca%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%animaux%' OR event_detail LIKE '%pets%' OR event_detail LIKE '%pet-%' OR event_detail LIKE '%pet/%' OR event_detail LIKE '%pet\.%')) OR
+    ((domain LIKE '%amazon%' OR domain LIKE '%amzn%') AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%animaux%' OR event_detail LIKE '%pets%' OR event_detail LIKE '%pet-%' OR event_detail LIKE '%pet/%' OR event_detail LIKE '%pet\.%')) OR
+    (domain LIKE '%costco.ca%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%animaux%' OR event_detail LIKE '%pets%' OR event_detail LIKE '%pet-%' OR event_detail LIKE '%pet/%' OR event_detail LIKE '%pet\.%')) OR
+    (domain LIKE '%sobeys.com%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%pet%')))
     )
 ),
 
