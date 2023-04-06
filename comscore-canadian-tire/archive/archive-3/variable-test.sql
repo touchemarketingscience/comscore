@@ -3,7 +3,7 @@ WITH
 year_lower_bound AS (SELECT 2021 AS value),
 year_upper_bound AS (SELECT 2022 AS value),
 
-test AS (SELECT 
+comscore_cleaned_intenders_only AS (SELECT 
 (CASE
 WHEN (domain LIKE '%canadiantire.ca%') THEN 'Canadian Tire'
 WHEN (domain LIKE '%walmart.ca%') THEN 'Walmart'
@@ -43,4 +43,4 @@ ORDER BY 2 DESC
 )
 
 SELECT *
-FROM test LIMIT 100;
+FROM comscore_cleaned_intenders_only LIMIT 100;
