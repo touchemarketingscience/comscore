@@ -35,3 +35,22 @@ OR domain LIKE '%wbu.com%') OR
 (domain LIKE '%sobeys.com%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%pet%')))
 GROUP BY 1
 ORDER BY 2 DESC
+
+/*
+
+Pet Smart	            3130
+Mondou	                1429
+Walmart	                1262
+Amazon	                1067
+Costco	                356
+Canadian Tire	        323
+Pet Land	            181
+Pet Valu	            140
+Wild Birds Unlimited	91
+Chico	                77
+Sobeys	                20
+Pattes Griffes	        14
+Tail Blazers	        8
+Bailey Blu	            1
+
+*/
