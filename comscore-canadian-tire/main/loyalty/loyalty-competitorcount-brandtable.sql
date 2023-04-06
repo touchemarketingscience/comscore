@@ -42,31 +42,50 @@ WITH unique_intender_data AS (
 --  MAIN TABLES
 -- *********************************************************************************************
 
-total_website_visit_count_per_intender AS (
+total_website_visit_count_per_intender_1ONLY AS (
     SELECT
         guid,
         COUNT(DISTINCT domain_group) AS domain_group_count
     FROM unique_intender_data
     GROUP BY 1
+    HAVING COUNT(DISTINCT domain_group) = 1
+),
+
+total_website_visit_count_per_intender_2PLUS AS (
+    SELECT
+        guid,
+        COUNT(DISTINCT domain_group) AS domain_group_count
+    FROM unique_intender_data
+    GROUP BY 1
+    HAVING COUNT(DISTINCT domain_group) >= 2
+),
+
+total_output_1ONLY AS (
+    SELECT 
+    domain_group,
+    COUNT(DISTINCT guid) AS unique_users
+    FROM unique_intender_data WHERE guid IN (
+        SELECT guid FROM total_website_visit_count_per_intender_1ONLY
+    )
+    GROUP BY 1
+),
+
+total_output_2ONLY AS (
+    SELECT 
+    domain_group,
+    COUNT(DISTINCT guid) AS unique_users
+    FROM unique_intender_data WHERE guid IN (
+        SELECT guid FROM total_website_visit_count_per_intender_2PLUS
+    )
+    GROUP BY 1
 ),
 
 total_output AS (
     SELECT
-        CASE
-        WHEN domain_group_count = 0 THEN '0 websites'
-        WHEN domain_group_count = 1 THEN '1 websites'
-        WHEN domain_group_count = 2 THEN '2 websites'
-        WHEN domain_group_count = 3 THEN '3 websites'
-        WHEN domain_group_count = 4 THEN '4 websites'
-        WHEN domain_group_count = 5 THEN '5 websites'
-        WHEN domain_group_count = 6 THEN '6 websites'
-        WHEN domain_group_count = 7 THEN '7 websites'
-        ELSE '8 or more websites'
-        END AS website_count,
-        COUNT(guid) AS unique_users
-    FROM total_website_visit_count_per_intender
-    GROUP BY 1
-    ORDER BY MIN(domain_group_count)
+    a.domain_group,
+    a.unique_users AS unique_users_1ONLY,
+    b.unique_users AS unique_users_2PLUS
+    FROM total_output_1ONLY AS a FULL OUTER JOIN total_output_2ONLY AS b ON a.domain_group = b.domain_group
 ),
 
 -- *********************************************************************************************
@@ -90,8 +109,9 @@ ref_intenders AS (
 -- *********************************************************************************************
 
 SELECT
-a.website_count,
-a.unique_users,
+a.domain_group,
+a.unique_users_1ONLY,
+a.unique_users_2PLUS,
 b.unique_users AS ref_intenders,
 c.unique_users AS ref_genpop
 FROM total_output AS a
@@ -99,22 +119,3 @@ CROSS JOIN ref_intenders AS b
 CROSS JOIN ref_genpop AS c
 
 LIMIT 10000;
-
-    /*
-     -- *** CONVERTER *** --
-     AND
-     (
-     -- (event_detail LIKE '%shopping-cart%')                                   OR
-     -- (event_detail LIKE '%/cart%')                                           OR
-     -- (event_detail LIKE '%checkout%')                                        OR
-     -- (event_detail LIKE '%shop%' AND event_detail LIKE '%cart%')             OR
-     -- (event_detail LIKE '%cart%' AND event_detail LIKE '%shop%')             OR
-     
-     (event_detail LIKE '%history%' AND event_detail LIKE '%order%')         OR
-     (event_detail LIKE '%order%' AND event_detail LIKE '%history%')         OR
-     (event_detail LIKE '%recent%' AND event_detail LIKE '%order%')          OR
-     (event_detail LIKE '%order%' AND event_detail LIKE '%recent%')          OR
-     (event_detail LIKE '%account%' AND event_detail LIKE '%order%')         OR 
-     (event_detail LIKE '%order%' AND event_detail LIKE '%account%')         
-     )
-     */

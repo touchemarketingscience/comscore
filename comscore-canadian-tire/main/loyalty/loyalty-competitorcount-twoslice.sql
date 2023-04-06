@@ -21,7 +21,7 @@ WITH unique_intender_data AS (
     END
     ) AS domain_group
     FROM spectrum_comscore.clickstream_ca
-    WHERE (date_part(year, calendar_date) >= 2019 AND date_part(year, calendar_date) <= 2022) AND
+    WHERE (date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022) AND
     ((domain LIKE '%petland.ca%'
     OR domain LIKE '%petvalu.ca%'
     OR domain LIKE '%petsmart.ca%'
@@ -48,18 +48,48 @@ total_website_visit_count_per_intender AS (
         COUNT(DISTINCT domain_group) AS domain_group_count
     FROM unique_intender_data
     GROUP BY 1
+),
+
+total_output AS (
+    SELECT
+        CASE
+        WHEN domain_group_count = 0 THEN '0 websites'
+        WHEN domain_group_count = 1 THEN '1 websites'
+        ELSE '2+ websites'
+        END AS website_count,
+        COUNT(guid) AS unique_users
+    FROM total_website_visit_count_per_intender
+    GROUP BY 1
+    ORDER BY MIN(domain_group_count)
+),
+
+-- *********************************************************************************************
+--  INDEX REFERENCE COLUMNS
+-- *********************************************************************************************
+
+ref_genpop AS (
+    SELECT COUNT(DISTINCT guid) AS unique_users
+    FROM spectrum_comscore.clickstream_ca
+    WHERE date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022
+),
+
+ref_intenders AS (
+    SELECT COUNT(DISTINCT guid) AS unique_users
+    FROM unique_intender_data
+    WHERE date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022
 )
 
+-- *********************************************************************************************
+--  OUTPUT
+-- *********************************************************************************************
+
 SELECT
+a.website_count,
+a.unique_users,
+b.unique_users AS ref_intenders,
+c.unique_users AS ref_genpop
+FROM total_output AS a
+CROSS JOIN ref_intenders AS b
+CROSS JOIN ref_genpop AS c
 
-    CASE
-    WHEN domain_group_count = 0 THEN '0 websites'
-    WHEN domain_group_count = 1 THEN '1 websites'
-    ELSE '2+ websites'
-    END AS website_count,
-    COUNT(guid) AS unique_users
-
-FROM total_website_visit_count_per_intender
-GROUP BY 1
-ORDER BY MIN(domain_group_count)
 LIMIT 10000;
