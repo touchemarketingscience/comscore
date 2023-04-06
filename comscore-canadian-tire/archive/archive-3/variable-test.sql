@@ -42,5 +42,4 @@ GROUP BY 1
 ORDER BY 2 DESC
 )
 
-SELECT *
-FROM comscore_cleaned_intenders_only LIMIT 100;
+SELECT * FROM comscore_cleaned_intenders_only LIMIT 100;
