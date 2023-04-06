@@ -16,7 +16,6 @@ WHEN (domain LIKE '%tailblazerspets.com%') THEN 'Tail Blazers'
 WHEN (domain LIKE 'wbu.c%') THEN 'Wild Birds Unlimited'
 ELSE domain
 END) AS domain_group,
-domain,
 count (DISTINCT guid)
 FROM spectrum_comscore.clickstream_ca
 WHERE (date_part(year, calendar_date) = 2021 OR date_part(year, calendar_date) = 2022) AND
@@ -34,5 +33,24 @@ OR (domain LIKE 'wbu.c%') OR
 ((domain LIKE '%amazon%' OR domain LIKE '%amzn%') AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%animaux%' OR event_detail LIKE '%pets%' OR event_detail LIKE '%pet-%' OR event_detail LIKE '%pet/%' OR event_detail LIKE '%pet\.%')) OR
 (domain LIKE '%costco.ca%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%animaux%' OR event_detail LIKE '%pets%' OR event_detail LIKE '%pet-%' OR event_detail LIKE '%pet/%' OR event_detail LIKE '%pet\.%')) OR
 (domain LIKE '%sobeys.com%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%pet%')))
-GROUP BY 1, 2
+GROUP BY 1
 ORDER BY 2 DESC
+
+/*
+
+Pet Smart	            3434
+Mondou	                1417
+Walmart	                1262
+Pet Valu	            1166
+Amazon	                1067
+Costco	                356
+Canadian Tire	        323
+Pet Land	            183
+Wild Birds Unlimited	90
+Chico	                87
+Sobeys	                20
+Pattes Griffes	        14
+Tail Blazers	        8
+Bailey Blu	            1
+
+*/
