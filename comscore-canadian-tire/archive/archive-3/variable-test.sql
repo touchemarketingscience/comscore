@@ -1,12 +1,7 @@
 WITH 
 
-year_lower_bound AS (
-  SELECT 2021 AS value
-),
-
-year_upper_bound AS (
-  SELECT 2022 AS value
-),
+year_lower_bound AS (SELECT 2021 AS value),
+year_upper_bound AS (SELECT 2022 AS value),
 
 test AS (SELECT 
 (CASE
