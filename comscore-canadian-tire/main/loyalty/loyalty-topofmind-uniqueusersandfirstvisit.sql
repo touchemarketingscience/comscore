@@ -98,6 +98,7 @@ ref_intenders AS (
 
 SELECT
 a.domain_group,
+a.unique_users,
 a.first_visit_users,
 b.unique_users AS ref_intenders,
 c.unique_users AS ref_genpop
