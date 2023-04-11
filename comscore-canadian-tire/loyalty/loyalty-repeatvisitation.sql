@@ -1,5 +1,11 @@
 -- Step 1: Calculate the total visits per domain for each user
-WITH non_unique_intender_data AS (
+WITH 
+
+year_lower_bound AS (SELECT 2021 AS value),
+year_upper_bound AS (SELECT 2022 AS value),
+
+
+non_unique_intender_data AS (
     SELECT 
         guid,
         (CASE
@@ -21,7 +27,7 @@ WITH non_unique_intender_data AS (
         END) AS domain_group,
         calendar_date
     FROM spectrum_comscore.clickstream_ca
-    WHERE (date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022) AND
+    WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound)) AND
     ((domain LIKE 'petland.c%')
     OR (domain LIKE '%petvalu.c%')
     OR (domain LIKE '%petsmart.c%')
@@ -45,7 +51,7 @@ WITH non_unique_intender_data AS (
 total_visits AS (
   SELECT guid,
          domain_group,
-         COUNT(*) AS visit_count
+         COUNT(DISTINCT calendar_date) AS visit_count
   FROM non_unique_intender_data
   GROUP BY guid, domain_group
 ),
@@ -54,7 +60,7 @@ total_visits AS (
 unique_visits AS (
   SELECT guid,
          domain_group,
-         COUNT(DISTINCT calendar_date) AS unique_visit_count
+         COUNT(DISTINCT guid) AS unique_visit_count
   FROM non_unique_intender_data
   GROUP BY guid, domain_group
 ),
@@ -93,13 +99,13 @@ ORDER BY repeat_visits DESC
 ref_genpop AS (
     SELECT COUNT(DISTINCT guid) AS unique_users
     FROM spectrum_comscore.clickstream_ca
-    WHERE date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022
+    WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound))
 ),
 
 ref_intenders AS (
     SELECT COUNT(DISTINCT guid) AS unique_users
     FROM non_unique_intender_data
-    WHERE date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022
+    WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound))
 )
 
 -- *********************************************************************************************
