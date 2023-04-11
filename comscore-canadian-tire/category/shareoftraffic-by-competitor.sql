@@ -61,18 +61,18 @@ total_genpop AS (
         (CASE
         WHEN (domain LIKE '%canadiantire.ca%') THEN 'Canadian Tire'
         WHEN (domain LIKE '%walmart.ca%') THEN 'Walmart'
-        WHEN (domain LIKE '%amazon%') THEN 'Amazon'
+        WHEN (domain LIKE '%amazon%' OR domain LIKE '%amzn%') THEN 'Amazon'
         WHEN (domain LIKE '%costco.ca%') THEN 'Costco'
         WHEN (domain LIKE '%sobeys.com%') THEN 'Sobeys'
-        WHEN (domain LIKE '%petland.ca%') THEN 'Pet Land'
-        WHEN (domain LIKE '%petvalu.ca%') THEN 'Pet Valu'
-        WHEN (domain LIKE '%petsmart.ca%') THEN 'Pet Smart'
+        WHEN (domain LIKE 'petland.c%') THEN 'Pet Land'
+        WHEN (domain LIKE '%petvalu.c%') THEN 'Pet Valu'
+        WHEN (domain LIKE '%petsmart.c%') THEN 'Pet Smart'
         WHEN (domain LIKE '%baileyblu.com%') THEN 'Bailey Blu'
-        WHEN (domain LIKE '%chico.ca%') THEN 'Chico'
-        WHEN (domain LIKE '%mondou.com%') THEN 'Mondou'
+        WHEN (domain LIKE 'chico.c%') OR domain LIKE '%boutiquedanimauxchico.com%' THEN 'Chico'
+        WHEN (domain LIKE 'mondou.c%') THEN 'Mondou'
         WHEN (domain LIKE '%pattesgriffes.com%') THEN 'Pattes Griffes'
         WHEN (domain LIKE '%tailblazerspets.com%') THEN 'Tail Blazers'
-        WHEN (domain LIKE '%wbu.com%') THEN 'Wild Birds Unlimited'
+        WHEN (domain LIKE 'wbu.c%') THEN 'Wild Birds Unlimited'
         ELSE domain
         END
         ) AS join_field_b,
