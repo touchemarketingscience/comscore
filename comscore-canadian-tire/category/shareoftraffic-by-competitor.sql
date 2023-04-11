@@ -1,4 +1,9 @@
-WITH unique_intender_data AS (
+WITH 
+
+year_lower_bound AS (SELECT 2022 AS value),
+year_upper_bound AS (SELECT 2022 AS value),
+
+unique_intender_data AS (
     SELECT 
     calendar_date,
     guid,
@@ -20,7 +25,7 @@ WITH unique_intender_data AS (
     ELSE domain
     END) AS domain_group
     FROM spectrum_comscore.clickstream_ca
-    WHERE (date_part(year, calendar_date) >= 2019 AND date_part(year, calendar_date) <= 2022) AND
+    WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound)) AND
     ((domain LIKE 'petland.c%')
     OR (domain LIKE '%petvalu.c%')
     OR (domain LIKE '%petsmart.c%')
@@ -93,13 +98,13 @@ total_output AS (
 ref_genpop AS (
     SELECT COUNT(DISTINCT guid) AS unique_users
     FROM spectrum_comscore.clickstream_ca
-    WHERE date_part(year, calendar_date) >= 2019 AND date_part(year, calendar_date) <= 2022
+    WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound))
 ),
 
 ref_intenders AS (
     SELECT COUNT(DISTINCT guid) AS unique_users
     FROM unique_intender_data
-    WHERE date_part(year, calendar_date) >= 2019 AND date_part(year, calendar_date) <= 2022
+    WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound))
 )
 
 -- *********************************************************************************************
