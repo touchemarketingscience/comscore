@@ -89,17 +89,21 @@ converter_group AS (
     FROM comscore_cleaned_intenders_only
     WHERE guid IN (SELECT guid FROM converter_list_petsmart)
     GROUP BY 1
-)
+),
 
 -- **************************************************************************
 -- OUTPUT TABLE
 -- **************************************************************************
 
-SELECT
-a.domain_group,
-a.intenders,
-b.converters
-FROM intender_group AS a LEFT JOIN converter_group AS b ON a.domain_group = b.domain_group
+converters_petsmart AS (SELECT
+    'Pet Smart' as converter_brand,
+    a.domain_group,
+    a.intenders,
+    b.converters
+    FROM intender_group AS a LEFT JOIN converter_group AS b ON a.domain_group = b.domain_group
+)
+
+SELECT * FROM converters_petsmart
 
 /* RESULT:
 domain_group            intenders	converters
