@@ -1,22 +1,139 @@
 WITH 
 
-year_lower_bound AS (SELECT 2019 AS value),
+segment_filter AS (SELECT 'Purchase of Home' AS value),
+
+year_lower_bound AS (SELECT 2021 AS value),
 year_upper_bound AS (SELECT 2022 AS value),
+
 
 domain_segment_affinities AS (
     SELECT 
-    domain,
-    event_detail,
-    COUNT(DISTINCT guid) AS unique_users
+    guid,
+    (CASE 
+
+    WHEN -- MOVING TO A NEW HOME
+    (event_detail LIKE '%apartment%' AND event_detail LIKE '%rent%') OR 
+    (event_detail LIKE '%real-estate%' AND event_detail LIKE '%rent%') OR 
+    (event_detail LIKE '%house%' AND event_detail LIKE '%rent%') OR 
+    (event_detail LIKE '%apartment%' AND event_detail LIKE '%condo%') OR 
+    (event_detail LIKE '%condo%' AND event_detail LIKE '%rent%') OR
+    (event_detail LIKE '%room%' AND event_detail LIKE '%rent%')
+    THEN 'Moving To A New Home'
+
+    WHEN -- Job Change
+    (event_detail LIKE '%job%' AND event_detail LIKE '%open%') OR 
+    (domain LIKE '%indeed.c%' OR domain LIKE '%monster.c%') OR 
+    (event_detail LIKE '%jobs-in%') OR
+    (event_detail LIKE '%apply%' AND event_detail LIKE '%career%')
+    THEN 'Job Change'
+
+    WHEN -- Retirement
+    (event_detail LIKE '%retirement%' AND event_detail LIKE '%living%')  OR 
+    (event_detail LIKE '%senior%' AND event_detail LIKE '%residence%') OR 
+    (event_detail LIKE '%senior%' AND event_detail LIKE '%living%') OR
+    (event_detail LIKE '%senior%' AND event_detail LIKE '%home%') OR
+    (event_detail LIKE '%retire%' AND event_detail LIKE '%home%')
+    THEN 'Retirement'
+
+    WHEN -- Starting a Family
+    (event_detail LIKE '%baby%' AND event_detail LIKE '%food%') OR 
+    (event_detail LIKE '%diaper%' AND event_detail LIKE '%baby%') OR 
+    (event_detail LIKE '%breast%' AND event_detail LIKE '%feeding%') OR 
+    (event_detail LIKE '%marriage%') OR 
+    (event_detail LIKE '%marr%' AND event_detail LIKE '%honeymoon%')
+    THEN 'Starting a Family'
+
+    WHEN -- Health Issues
+    (event_detail LIKE '%symptom%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+    (event_detail LIKE '%sick%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+    (event_detail LIKE '%health%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+    (event_detail LIKE '%call%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+    (event_detail LIKE '%schedule%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+    (event_detail LIKE '%visit%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+    (event_detail LIKE '%appointment%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%'))
+    THEN 'Health Issues'
+
+    WHEN -- Home Purchase
+    (event_detail LIKE '%mortgage%') OR 
+    (event_detail LIKE '%real%' AND event_detail LIKE '%estate%') OR 
+    (event_detail LIKE '%own%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%')) OR 
+    (event_detail LIKE '%finance%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%')) OR 
+    (event_detail LIKE '%purchase%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%')) OR 
+    (event_detail LIKE '%buy%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%')) OR 
+    (event_detail LIKE '%mortgage%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%'))
+    THEN 'Purchase of Home'
+
+    ELSE ''
+    END) AS segment_trigger
     FROM spectrum_comscore.clickstream_ca
-    WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound)) AND
-    event_detail LIKE '%baby-food%'
-    GROUP BY 1, 2
+    WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound))
+),
+
+-- *********************************************************************************************
+user_segment AS (
+    SELECT DISTINCT guid FROM domain_segment_affinities WHERE segment_trigger = (SELECT value FROM segment_filter)
 ),
 
 unique_intender_data AS (
     SELECT 
     calendar_date,
+    domain,
+    event_detail,
+    (CASE 
+
+    WHEN -- MOVING TO A NEW HOME
+    (event_detail LIKE '%apartment%' AND event_detail LIKE '%rent%') OR 
+    (event_detail LIKE '%real-estate%' AND event_detail LIKE '%rent%') OR 
+    (event_detail LIKE '%house%' AND event_detail LIKE '%rent%') OR 
+    (event_detail LIKE '%apartment%' AND event_detail LIKE '%condo%') OR 
+    (event_detail LIKE '%condo%' AND event_detail LIKE '%rent%') OR
+    (event_detail LIKE '%room%' AND event_detail LIKE '%rent%')
+    THEN 'Moving To A New Home'
+
+    WHEN -- Job Change
+    (event_detail LIKE '%job%' AND event_detail LIKE '%open%') OR 
+    (domain LIKE '%indeed.c%' OR domain LIKE '%monster.c%') OR 
+    (event_detail LIKE '%jobs-in%') OR
+    (event_detail LIKE '%apply%' AND event_detail LIKE '%career%')
+    THEN 'Job Change'
+
+    WHEN -- Retirement
+    (event_detail LIKE '%retirement%' AND event_detail LIKE '%living%')  OR 
+    (event_detail LIKE '%senior%' AND event_detail LIKE '%residence%') OR 
+    (event_detail LIKE '%senior%' AND event_detail LIKE '%living%') OR
+    (event_detail LIKE '%senior%' AND event_detail LIKE '%home%') OR
+    (event_detail LIKE '%retire%' AND event_detail LIKE '%home%')
+    THEN 'Retirement'
+
+    WHEN -- Starting a Family
+    (event_detail LIKE '%baby%' AND event_detail LIKE '%food%') OR 
+    (event_detail LIKE '%breast%' AND event_detail LIKE '%feeding%') OR 
+    (event_detail LIKE '%marriage%') OR 
+    (event_detail LIKE '%marr%' AND event_detail LIKE '%honeymoon%')
+    THEN 'Starting a Family'
+
+    WHEN -- Health Issues
+    (event_detail LIKE '%symptom%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+    (event_detail LIKE '%sick%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+    (event_detail LIKE '%health%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+    (event_detail LIKE '%call%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+    (event_detail LIKE '%schedule%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+    (event_detail LIKE '%visit%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+    (event_detail LIKE '%appointment%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%'))
+    THEN 'Health Issues'
+
+    WHEN -- Home Purchase
+    (event_detail LIKE '%mortgage%') OR 
+    (event_detail LIKE '%real%' AND event_detail LIKE '%estate%') OR 
+    (event_detail LIKE '%own%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%')) OR 
+    (event_detail LIKE '%finance%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%')) OR 
+    (event_detail LIKE '%purchase%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%')) OR 
+    (event_detail LIKE '%buy%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%')) OR 
+    (event_detail LIKE '%mortgage%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%'))
+    THEN 'Purchase of Home'
+
+    ELSE ''
+    END) AS segment_trigger,
     guid
     FROM spectrum_comscore.clickstream_ca
     WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound)) AND
@@ -34,6 +151,7 @@ unique_intender_data AS (
     ((domain LIKE '%amazon%' OR domain LIKE '%amzn%') AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%animaux%' OR event_detail LIKE '%pets%' OR event_detail LIKE '%pet-%' OR event_detail LIKE '%pet/%' OR event_detail LIKE '%pet\.%')) OR
     (domain LIKE '%costco.ca%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%animaux%' OR event_detail LIKE '%pets%' OR event_detail LIKE '%pet-%' OR event_detail LIKE '%pet/%' OR event_detail LIKE '%pet\.%')) OR
     (domain LIKE '%sobeys.com%' AND (event_detail LIKE '%animalerie%' OR event_detail LIKE '%pet%')))
+    AND guid IN (SELECT guid FROM user_segment)
 ),
 
 -- *********************************************************************************************
@@ -42,17 +160,15 @@ unique_intender_data AS (
 
 total_intenders AS (
     SELECT
-        date_part(year, calendar_date) AS join_field_a,
-        date_part(month, calendar_date) AS join_field_b,
+        segment_trigger AS join_field_b,
         COUNT(DISTINCT guid) AS unique_users
     FROM unique_intender_data
-    GROUP BY 1, 2
+    GROUP BY 1
 ),
 
 total_converters AS (
     SELECT
-        date_part(year, calendar_date) AS join_field_a,
-        date_part(month, calendar_date) AS join_field_b,
+        segment_trigger AS join_field_b,
         COUNT(DISTINCT guid) AS unique_users
     FROM unique_intender_data WHERE guid IN (
         '512653071',
@@ -896,32 +1012,82 @@ total_converters AS (
         '505085769',
         '552555189'
     )
-    GROUP BY 1, 2
+    GROUP BY 1
 ),
 
 total_genpop AS (
      SELECT
-        date_part(year, calendar_date) AS join_field_a,
-        date_part(month, calendar_date) AS join_field_b,
+        (CASE 
+
+        WHEN -- MOVING TO A NEW HOME
+        (event_detail LIKE '%apartment%' AND event_detail LIKE '%rent%') OR 
+        (event_detail LIKE '%real-estate%' AND event_detail LIKE '%rent%') OR 
+        (event_detail LIKE '%house%' AND event_detail LIKE '%rent%') OR 
+        (event_detail LIKE '%apartment%' AND event_detail LIKE '%condo%') OR 
+        (event_detail LIKE '%condo%' AND event_detail LIKE '%rent%') OR
+        (event_detail LIKE '%room%' AND event_detail LIKE '%rent%')
+        THEN 'Moving To A New Home'
+
+        WHEN -- Job Change
+        (event_detail LIKE '%job%' AND event_detail LIKE '%open%') OR 
+        (domain LIKE '%indeed.c%' OR domain LIKE '%monster.c%') OR 
+        (event_detail LIKE '%jobs-in%') OR
+        (event_detail LIKE '%apply%' AND event_detail LIKE '%career%')
+        THEN 'Job Change'
+
+        WHEN -- Retirement
+        (event_detail LIKE '%retirement%' AND event_detail LIKE '%living%')  OR 
+        (event_detail LIKE '%senior%' AND event_detail LIKE '%residence%') OR 
+        (event_detail LIKE '%senior%' AND event_detail LIKE '%living%') OR
+        (event_detail LIKE '%senior%' AND event_detail LIKE '%home%') OR
+        (event_detail LIKE '%retire%' AND event_detail LIKE '%home%')
+        THEN 'Retirement'
+
+        WHEN -- Starting a Family
+        (event_detail LIKE '%baby%' AND event_detail LIKE '%food%') OR 
+        (event_detail LIKE '%breast%' AND event_detail LIKE '%feeding%') OR 
+        (event_detail LIKE '%marriage%') OR 
+        (event_detail LIKE '%marr%' AND event_detail LIKE '%honeymoon%')
+        THEN 'Starting a Family'
+
+        WHEN -- Health Issues
+        (event_detail LIKE '%symptom%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+        (event_detail LIKE '%sick%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+        (event_detail LIKE '%health%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+        (event_detail LIKE '%call%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+        (event_detail LIKE '%schedule%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+        (event_detail LIKE '%visit%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%')) OR 
+        (event_detail LIKE '%appointment%' AND (event_detail LIKE '%clinic%' OR event_detail LIKE '%hospital%' OR event_detail LIKE '%doctor%'))
+        THEN 'Health Issues'
+
+        WHEN -- Home Purchase
+        (event_detail LIKE '%mortgage%') OR 
+        (event_detail LIKE '%real%' AND event_detail LIKE '%estate%') OR 
+        (event_detail LIKE '%own%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%')) OR 
+        (event_detail LIKE '%finance%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%')) OR 
+        (event_detail LIKE '%purchase%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%')) OR 
+        (event_detail LIKE '%buy%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%')) OR 
+        (event_detail LIKE '%mortgage%' AND(event_detail LIKE '%home%' OR event_detail LIKE '%condo%' OR event_detail LIKE '%estate%' OR event_detail LIKE '%apartment%' OR event_detail LIKE '%house%'))
+        THEN 'Purchase of Home'
+
+        ELSE ''
+        END) join_field_b,
         COUNT(DISTINCT guid) AS unique_users
     FROM spectrum_comscore.clickstream_ca
-    GROUP BY 1, 2
+    GROUP BY 1
 ),
 
 total_output AS (
     SELECT 
-    total_intenders.join_field_a,
     total_intenders.join_field_b,
     total_intenders.unique_users AS total_intenders,
     total_converters.unique_users AS total_converters,
     total_genpop.unique_users AS total_genpop
 FROM total_genpop
 LEFT JOIN total_intenders
-    ON total_genpop.join_field_a = total_intenders.join_field_a
-    AND total_genpop.join_field_b = total_intenders.join_field_b
+    ON total_genpop.join_field_b = total_intenders.join_field_b
 LEFT JOIN total_converters
-    ON total_genpop.join_field_a = total_converters.join_field_a
-    AND total_genpop.join_field_b = total_converters.join_field_b
+    ON total_genpop.join_field_b = total_converters.join_field_b
 ),
 
 
@@ -946,8 +1112,7 @@ ref_intenders AS (
 -- *********************************************************************************************
 
 SELECT
-    a.join_field_a AS year,
-    a.join_field_b AS month,
+    a.join_field_b AS segment_trigger,
     a.total_intenders AS total_intenders,
     a.total_converters AS total_converters,
     a.total_genpop AS total_genpop,
