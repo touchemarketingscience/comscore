@@ -2242,13 +2242,13 @@ total_output AS (
     total_intenders.unique_users AS total_intenders,
     total_converters.unique_users AS total_converters,
     total_genpop.unique_users AS total_genpop
-FROM total_intenders
+FROM total_genpop
+LEFT JOIN total_intenders
+    ON total_genpop.join_field_a = total_intenders.join_field_a
+    AND total_genpop.join_field_b = total_intenders.join_field_b
 LEFT JOIN total_converters
-    ON total_intenders.join_field_a = total_converters.join_field_a
-    AND total_intenders.join_field_b = total_converters.join_field_b
-FULL OUTER JOIN total_genpop
-    ON total_intenders.join_field_a = total_genpop.join_field_a
-    AND total_intenders.join_field_b = total_genpop.join_field_b
+    ON total_genpop.join_field_a = total_converters.join_field_a
+    AND total_genpop.join_field_b = total_converters.join_field_b
 ),
 
 
