@@ -1798,7 +1798,8 @@ SELECT
     a.total_intenders AS total_intenders,
     a.total_converters AS total_converters,
     b.unique_users AS ref_genpop,
-    c.unique_users AS ref_intenders
+    c.unique_users AS ref_intenders,
+    d.unique_users AS ref_converters
 FROM total_output AS a
 CROSS JOIN ref_genpop AS b
 CROSS JOIN ref_intenders AS c
