@@ -7,7 +7,11 @@
 --      @DOMAIN GROUP (CLEANED DOMAIN)
 -- **************************************************************************
 
-WITH comscore_cleaned_intenders_only AS (SELECT 
+WITH 
+year_lower_bound AS (SELECT 2022 AS value),
+year_upper_bound AS (SELECT 2022 AS value),
+
+comscore_cleaned_intenders_only AS (SELECT 
 
 guid,
 
@@ -31,7 +35,7 @@ END) AS domain_group
 
 FROM spectrum_comscore.clickstream_ca
 
-WHERE (date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022) AND
+WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound)) AND
 
 ((domain LIKE 'petland.c%')
 OR (domain LIKE '%petvalu.c%')
@@ -54,8 +58,8 @@ OR (domain LIKE 'wbu.c%') OR
 -- PETSMART CONVERTERS 
 -- **************************************************************************
 converter_list_petsmart AS (
-    SELECT DISTINCT guid FROM spectrum_comscore.clickstream_ca
-    WHERE (date_part(year, calendar_date) >= 2021 AND date_part(year, calendar_date) <= 2022) AND (domain LIKE '%petsmart.c%') AND (
+    SELECT guid, COUNT(*) AS frequency FROM spectrum_comscore.clickstream_ca
+    WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound)) AND (domain LIKE '%petsmart.c%') AND (
         (event_detail LIKE '%shopping-cart%')                                   OR
         (event_detail LIKE '%/cart%')                                           OR
         (event_detail LIKE '%checkout%')                                        OR
@@ -68,6 +72,8 @@ converter_list_petsmart AS (
         (event_detail LIKE '%account%' AND event_detail LIKE '%order%')         OR 
         (event_detail LIKE '%order%' AND event_detail LIKE '%account%')         
     )
+    GROUP BY 1
+    ORDER BY 2 DESC
 ),
 
 -- **************************************************************************
@@ -103,7 +109,7 @@ converters_petsmart AS (SELECT
     FROM intender_group AS a LEFT JOIN converter_group AS b ON a.domain_group = b.domain_group
 )
 
-SELECT * FROM converters_petsmart
+SELECT * FROM converter_list_petsmart
 
 /* RESULT:
 domain_group            intenders	converters
