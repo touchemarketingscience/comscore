@@ -26,10 +26,10 @@ comscore_filtered_converters AS (
         WHEN domain LIKE '%dollarama.com%' OR event_detail LIKE '%dollarama.com%' THEN 'Dollarama'
         ELSE domain
         END) AS competitor,
-        count (DISTINCT guid) as unique_users
+        COUNT (DISTINCT guid) as unique_users
     FROM spectrum_comscore.clickstream_ca
     WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound)) 
-        AND
+        AND 
         ( -- INTENDER LOGIC
                (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')
             OR (domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%')
@@ -52,10 +52,9 @@ comscore_filtered_converters AS (
         ) 
         AND
         (  -- CONVERTER LOGIC
-                event_detail LIKE '%checkout%' 
+               event_detail LIKE '%checkout%' 
             OR event_detail LIKE '%commande%'
             OR event_detail LIKE '%payment%'
-            OR event_detail LIKE '%storelocator%'
             OR event_detail LIKE '%caisse%'
         )
     GROUP BY 1

@@ -3,7 +3,7 @@ WITH
 year_lower_bound AS (SELECT 2021 AS value),
 year_upper_bound AS (SELECT 2022 AS value),
 
-comscore_filtered_intenders AS (
+comscore_filtered_converters AS (
     SELECT 
         (CASE
         WHEN domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%' THEN 'Canadian Tire'
@@ -49,10 +49,14 @@ comscore_filtered_intenders AS (
             OR (domain LIKE '%renodepot.com%' OR event_detail LIKE '%renodepot.com%')
             OR (domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%')
             OR (domain LIKE '%dollarama.com%' OR event_detail LIKE '%dollarama.com%')
+        ) 
+        AND
+        (  -- CONVERTER LOGIC
+            event_detail LIKE '%storelocator%'
         )
     GROUP BY 1
     ORDER BY 2 DESC
 )
 
-SELECT * FROM comscore_filtered_intenders
+SELECT * FROM comscore_filtered_converters 
 LIMIT 10000;
