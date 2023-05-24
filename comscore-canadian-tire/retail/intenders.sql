@@ -1,7 +1,7 @@
 WITH 
 
-year_lower_bound AS (SELECT '2022-01-01' AS value),
-year_upper_bound AS (SELECT '2022-12-31' AS value),
+year_lower_bound AS (SELECT 2021 AS value),
+year_upper_bound AS (SELECT 2022 AS value),
 
 comscore_filtered AS (
     SELECT 
@@ -24,7 +24,7 @@ comscore_filtered AS (
         WHEN domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%' THEN 'Costco'
         WHEN domain LIKE '%dollarama.com%' OR event_detail LIKE '%dollarama.com%' THEN 'Dollarama'
         ELSE domain
-        END) AS domain_group,
+        END) AS competitor,
         count (DISTINCT guid)
     FROM spectrum_comscore.clickstream_ca
     WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound)) AND
