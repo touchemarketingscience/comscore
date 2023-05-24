@@ -25,7 +25,7 @@ comscore_filtered_converters AS (
         WHEN domain LIKE '%dollarama.com%' OR event_detail LIKE '%dollarama.com%' THEN 'Dollarama'
         ELSE domain
         END) AS competitor,
-        count (DISTINCT guid)
+        count (DISTINCT guid) as unique_users
     FROM spectrum_comscore.clickstream_ca
     WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound)) 
         AND
