@@ -30,7 +30,7 @@ comscore_filtered AS (
     FROM spectrum_comscore.clickstream_ca
     WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound)) 
         AND 
-        (
+        ( -- INTENDER LOGIC
                (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')
             OR (domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%')
             OR (domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%')
