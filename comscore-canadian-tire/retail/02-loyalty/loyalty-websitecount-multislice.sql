@@ -8,24 +8,28 @@ unique_intender_data AS (
     calendar_date,
     guid,
     (CASE
-    WHEN (domain LIKE '%canadiantire.ca%') THEN 'Canadian Tire'
-    WHEN (domain LIKE '%walmart.ca%') THEN 'Walmart'
-    WHEN (domain LIKE '%amazon%' OR domain LIKE '%amzn%') THEN 'Amazon'
-    WHEN (domain LIKE '%costco.ca%') THEN 'Costco'
-    WHEN (domain LIKE '%sobeys.com%') THEN 'Sobeys'
-    WHEN (domain LIKE 'petland.c%') THEN 'Pet Land'
-    WHEN (domain LIKE '%petvalu.c%') THEN 'Pet Valu'
-    WHEN (domain LIKE '%petsmart.c%') THEN 'Pet Smart'
-    WHEN (domain LIKE '%baileyblu.com%') THEN 'Bailey Blu'
-    WHEN (domain LIKE 'chico.c%') OR domain LIKE '%boutiquedanimauxchico.com%' THEN 'Chico'
-    WHEN (domain LIKE 'mondou.c%') THEN 'Mondou'
-    WHEN (domain LIKE '%pattesgriffes.com%') THEN 'Pattes Griffes'
-    WHEN (domain LIKE '%tailblazerspets.com%') THEN 'Tail Blazers'
-    WHEN (domain LIKE 'wbu.c%') THEN 'Wild Birds Unlimited'
+     WHEN domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%' THEN 'Canadian Tire'
+    WHEN domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%' THEN 'Amazon'
+    WHEN domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%' THEN 'Walmart'
+    WHEN domain LIKE '%bestbuy.ca%' OR event_detail LIKE '%bestbuy.ca%' THEN 'Best Buy'
+    WHEN domain LIKE '%wayfair.ca%' OR event_detail LIKE '%wayfair.ca%' THEN 'Wayfair'
+    WHEN domain LIKE '%ikea.com%' OR event_detail LIKE '%ikea.com%' THEN 'IKEA'
+    WHEN domain LIKE '%homesense.ca%' OR event_detail LIKE '%homesense.ca%' THEN 'Home Sense'
+    WHEN domain LIKE '%winners.ca%' OR event_detail LIKE '%winners.ca%' THEN 'Winners'
+    WHEN domain LIKE '%thebay.com%' OR event_detail LIKE '%thebay.com%' THEN 'Hudsons Bay'
+    WHEN domain LIKE '%labaie.com%' OR event_detail LIKE '%labaie.com%' THEN 'Hudsons Bay'
+    WHEN domain LIKE '%marshalls.ca%' OR event_detail LIKE '%marshalls.ca%' THEN 'Marshalls'
+    WHEN domain LIKE '%homehardware.ca%' OR event_detail LIKE '%homehardware.ca%' THEN 'Home Hardware'
+    WHEN domain LIKE '%homedepot.ca%' OR event_detail LIKE '%homedepot.ca%' THEN 'Home Depot'
+    WHEN domain LIKE '%rona.ca%' OR event_detail LIKE '%rona.ca%' THEN 'Rona'
+    WHEN domain LIKE '%lowes.ca%' OR event_detail LIKE '%lowes.ca%' THEN 'Lowes'
+    WHEN domain LIKE '%renodepot.com%' OR event_detail LIKE '%renodepot.com%' THEN 'Reno Depot'
+    WHEN domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%' THEN 'Costco'
+    WHEN domain LIKE '%dollarama.com%' OR event_detail LIKE '%dollarama.com%' THEN 'Dollarama'
     ELSE domain
     END) AS domain_group
     FROM spectrum_comscore.clickstream_ca
-   WHERE ( (calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND
+   WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND
    ( -- INTENDER LOGIC
             (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')
         OR (domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%')
@@ -45,7 +49,7 @@ unique_intender_data AS (
         OR (domain LIKE '%renodepot.com%' OR event_detail LIKE '%renodepot.com%')
         OR (domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%')
         OR (domain LIKE '%dollarama.com%' OR event_detail LIKE '%dollarama.com%')
-    )
+   )
 ),
 
 -- *********************************************************************************************
