@@ -6,6 +6,7 @@ date_upper_bound AS (SELECT '2022-12-31' AS value),
 unique_intender_data AS (
     SELECT 
     calendar_date,
+    zvelo_category,
     guid,
     (CASE
     WHEN domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%' THEN 'Canadian Tire'
@@ -29,7 +30,7 @@ unique_intender_data AS (
     ELSE domain
     END) AS domain_group
     FROM spectrum_comscore.clickstream_ca
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))  AND
     ( -- INTENDER LOGIC
             (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')
         OR (domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%')
@@ -56,26 +57,38 @@ unique_intender_data AS (
 --  MAIN TABLES
 -- *********************************************************************************************
 
-total_website_visit_count_per_intender AS (
+intender_list AS (
+    SELECT DISTINCT guid FROM unique_intender_data
+),
+
+total_intenders AS (
     SELECT
-        guid,
-        COUNT(DISTINCT domain_group) AS domain_group_count
-    FROM unique_intender_data
+        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
+        COUNT(DISTINCT guid) AS unique_users
+    FROM spectrum_comscore.clickstream_ca
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))  AND guid IN (
+        SELECT guid FROM intender_list
+    )
+    GROUP BY 1
+),
+
+total_genpop AS (
+     SELECT
+        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
+        COUNT(DISTINCT guid) AS unique_users
+    FROM spectrum_comscore.clickstream_ca 
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
     GROUP BY 1
 ),
 
 total_output AS (
-    SELECT
-        CASE
-        WHEN domain_group_count = 0 THEN '0 websites'
-        WHEN domain_group_count = 1 THEN '1 websites'
-        ELSE '2+ websites'
-        END AS website_count,
-        COUNT(guid) AS unique_users
-    FROM total_website_visit_count_per_intender
-    GROUP BY 1
-    ORDER BY MIN(domain_group_count)
+    SELECT 
+        a.join_field_a,
+        a.unique_users AS total_intenders,
+        b.unique_users AS total_genpop
+    FROM total_intenders AS a RIGHT JOIN total_genpop AS b ON a.join_field_a = b.join_field_a
 ),
+
 
 -- *********************************************************************************************
 --  INDEX REFERENCE COLUMNS
@@ -98,12 +111,16 @@ ref_intenders AS (
 -- *********************************************************************************************
 
 SELECT
-a.website_count,
-a.unique_users,
-b.unique_users AS ref_intenders,
-c.unique_users AS ref_genpop
-FROM total_output AS a
-CROSS JOIN ref_intenders AS b
-CROSS JOIN ref_genpop AS c
 
+    a.join_field_a          AS zvelo_category,
+    a.total_intenders       AS total_intenders,
+    a.total_genpop          AS total_genpop,
+    b.unique_users          AS ref_intenders,
+    c.unique_users          AS ref_genpop
+
+FROM        total_output    AS a
+CROSS JOIN  ref_intenders   AS b
+CROSS JOIN  ref_genpop      AS c
+
+ORDER BY 3 DESC, 1 ASC
 LIMIT 10000;

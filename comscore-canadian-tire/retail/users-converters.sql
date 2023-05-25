@@ -1,11 +1,12 @@
 WITH 
 
 date_lower_bound AS (SELECT '2021-01-01' AS value),
-date_upper_bound AS (SELECT '2022-12-31' AS value),
+date_upper_bound AS (SELECT '2023-03-31' AS value),
 
 unique_intender_data AS (
     SELECT 
-    calendar_date,
+    calendar_date, 
+    event_detail,
     guid,
     (CASE
     WHEN domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%' THEN 'Canadian Tire'
@@ -27,9 +28,9 @@ unique_intender_data AS (
     WHEN domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%' THEN 'Costco'
     WHEN domain LIKE '%dollarama.com%' OR event_detail LIKE '%dollarama.com%' THEN 'Dollarama'
     ELSE domain
-    END) AS domain_group
+    END) AS competitor
     FROM spectrum_comscore.clickstream_ca
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND
+    WHERE ( (calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND
     ( -- INTENDER LOGIC
             (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')
         OR (domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%')
@@ -49,61 +50,51 @@ unique_intender_data AS (
         OR (domain LIKE '%renodepot.com%' OR event_detail LIKE '%renodepot.com%')
         OR (domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%')
         OR (domain LIKE '%dollarama.com%' OR event_detail LIKE '%dollarama.com%')
-   )
+    )
+),
+
+unique_converter_data AS (
+    SELECT 
+    calendar_date,
+    event_detail,
+    competitor,
+    guid
+    FROM unique_intender_data
+    WHERE
+    (  -- CONVERTER LOGIC
+            event_detail LIKE '%checkout%' 
+        OR event_detail LIKE '%commande%'
+        OR event_detail LIKE '%payment%'
+        OR event_detail LIKE '%caisse%'
+    )
 ),
 
 -- *********************************************************************************************
 --  MAIN TABLES
 -- *********************************************************************************************
 
-total_website_visit_count_per_intender AS (
+total_intenders AS (
     SELECT
+        date_part(year, calendar_date) AS year,
         guid,
-        COUNT(DISTINCT domain_group) AS domain_group_count
+        competitor
     FROM unique_intender_data
-    GROUP BY 1
+    GROUP BY 1, 2, 3
 ),
 
-total_output AS (
+total_converters AS (
     SELECT
-        CASE
-        WHEN domain_group_count = 0 THEN '0 websites'
-        WHEN domain_group_count = 1 THEN '1 websites'
-        ELSE '2+ websites'
-        END AS website_count,
-        COUNT(guid) AS unique_users
-    FROM total_website_visit_count_per_intender
-    GROUP BY 1
-    ORDER BY MIN(domain_group_count)
-),
-
--- *********************************************************************************************
---  INDEX REFERENCE COLUMNS
--- *********************************************************************************************
-
-ref_genpop AS (
-    SELECT COUNT(DISTINCT guid) AS unique_users
-    FROM spectrum_comscore.clickstream_ca
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
-),
-
-ref_intenders AS (
-    SELECT COUNT(DISTINCT guid) AS unique_users
-    FROM unique_intender_data
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
+        date_part(year, calendar_date) AS year,
+        guid,
+        competitor
+    FROM unique_converter_data
+    GROUP BY 1, 2, 3
 )
+
 
 -- *********************************************************************************************
 --  OUTPUT
 -- *********************************************************************************************
 
-SELECT
-a.website_count,
-a.unique_users,
-b.unique_users AS ref_intenders,
-c.unique_users AS ref_genpop
-FROM total_output AS a
-CROSS JOIN ref_intenders AS b
-CROSS JOIN ref_genpop AS c
-
-LIMIT 10000;
+SELECT * FROM total_converters
+LIMIT 1000000;
