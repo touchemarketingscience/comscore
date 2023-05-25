@@ -1,16 +1,32 @@
 WITH 
 
-date_lower_bound AS (SELECT '2019-01-01' AS value),
-date_upper_bound AS (SELECT '2023-03-31' AS value),
+date_lower_bound AS (SELECT '2021-01-01' AS value),
+date_upper_bound AS (SELECT '2022-12-31' AS value),
 
 unique_intender_data AS (
     SELECT 
     calendar_date,
-    event_detail,
-    guid
+    guid,
+    (CASE
+    WHEN (domain LIKE '%canadiantire.ca%') THEN 'Canadian Tire'
+    WHEN (domain LIKE '%walmart.ca%') THEN 'Walmart'
+    WHEN (domain LIKE '%amazon%' OR domain LIKE '%amzn%') THEN 'Amazon'
+    WHEN (domain LIKE '%costco.ca%') THEN 'Costco'
+    WHEN (domain LIKE '%sobeys.com%') THEN 'Sobeys'
+    WHEN (domain LIKE 'petland.c%') THEN 'Pet Land'
+    WHEN (domain LIKE '%petvalu.c%') THEN 'Pet Valu'
+    WHEN (domain LIKE '%petsmart.c%') THEN 'Pet Smart'
+    WHEN (domain LIKE '%baileyblu.com%') THEN 'Bailey Blu'
+    WHEN (domain LIKE 'chico.c%') OR domain LIKE '%boutiquedanimauxchico.com%' THEN 'Chico'
+    WHEN (domain LIKE 'mondou.c%') THEN 'Mondou'
+    WHEN (domain LIKE '%pattesgriffes.com%') THEN 'Pattes Griffes'
+    WHEN (domain LIKE '%tailblazerspets.com%') THEN 'Tail Blazers'
+    WHEN (domain LIKE 'wbu.c%') THEN 'Wild Birds Unlimited'
+    ELSE domain
+    END) AS domain_group
     FROM spectrum_comscore.clickstream_ca
-    WHERE ( (calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND
-    ( -- INTENDER LOGIC
+   WHERE ( (calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND
+   ( -- INTENDER LOGIC
             (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')
         OR (domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%')
         OR (domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%')
@@ -32,63 +48,35 @@ unique_intender_data AS (
     )
 ),
 
-unique_converter_data AS (
-    SELECT 
-    calendar_date,
-    event_detail,
-    guid
-    FROM unique_intender_data
-    WHERE
-    (  -- CONVERTER LOGIC
-            event_detail LIKE '%checkout%' 
-        OR event_detail LIKE '%commande%'
-        OR event_detail LIKE '%payment%'
-        OR event_detail LIKE '%caisse%'
-    )
-),
-
 -- *********************************************************************************************
 --  MAIN TABLES
 -- *********************************************************************************************
 
-total_intenders AS (
+total_website_visit_count_per_intender AS (
     SELECT
-        date_part(year, calendar_date) AS join_field_a,
-        date_part(month, calendar_date) AS join_field_b,
-        COUNT(DISTINCT guid) AS unique_users
+        guid,
+        COUNT(DISTINCT domain_group) AS domain_group_count
     FROM unique_intender_data
-    GROUP BY 1, 2
-),
-
-total_converters AS (
-    SELECT
-        date_part(year, calendar_date) AS join_field_a,
-        date_part(month, calendar_date) AS join_field_b,
-        COUNT(DISTINCT guid) AS unique_users
-    FROM unique_converter_data
-    GROUP BY 1, 2
-),
-
-total_genpop AS (
-     SELECT
-        date_part(year, calendar_date) AS join_field_a,
-        date_part(month, calendar_date) AS join_field_b,
-        COUNT(DISTINCT guid) AS unique_users
-    FROM spectrum_comscore.clickstream_ca
-    GROUP BY 1, 2
+    GROUP BY 1
 ),
 
 total_output AS (
-    SELECT 
-        total_genpop.join_field_a,
-        total_genpop.join_field_b,
-        total_genpop.unique_users AS total_genpop,
-        total_intenders.unique_users AS total_intenders,
-        total_converters.unique_users AS total_converters
-    FROM 
-    total_genpop 
-    INNER JOIN total_intenders  ON total_genpop.join_field_a = total_intenders.join_field_a AND total_genpop.join_field_b = total_intenders.join_field_b
-    INNER JOIN total_converters ON total_genpop.join_field_a = total_converters.join_field_a AND total_genpop.join_field_b = total_converters.join_field_b
+    SELECT
+        CASE
+        WHEN domain_group_count = 0 THEN '0 websites'
+        WHEN domain_group_count = 1 THEN '1 websites'
+        WHEN domain_group_count = 2 THEN '2 websites'
+        WHEN domain_group_count = 3 THEN '3 websites'
+        WHEN domain_group_count = 4 THEN '4 websites'
+        WHEN domain_group_count = 5 THEN '5 websites'
+        WHEN domain_group_count = 6 THEN '6 websites'
+        WHEN domain_group_count = 7 THEN '7 websites'
+        ELSE '8 or more websites'
+        END AS website_count,
+        COUNT(guid) AS unique_users
+    FROM total_website_visit_count_per_intender
+    GROUP BY 1
+    ORDER BY MIN(domain_group_count)
 ),
 
 -- *********************************************************************************************
@@ -105,12 +93,6 @@ ref_intenders AS (
     SELECT COUNT(DISTINCT guid) AS unique_users
     FROM unique_intender_data
     WHERE ( (calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
-),
-
-ref_converters AS (
-    SELECT COUNT(DISTINCT guid) AS unique_users
-    FROM unique_converter_data
-    WHERE ( (calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
 )
 
 -- *********************************************************************************************
@@ -118,16 +100,12 @@ ref_converters AS (
 -- *********************************************************************************************
 
 SELECT
-    total_output.join_field_a AS year,
-    total_output.join_field_b AS month,
-    total_output.total_intenders AS total_intenders,
-    total_output.total_genpop AS total_genpop,
-    ref_genpop.unique_users AS ref_genpop,
-    ref_intenders.unique_users AS ref_intenders,
-    ref_converters.unique_users AS ref_converters
-FROM total_output
-CROSS JOIN ref_genpop
-CROSS JOIN ref_intenders
-CROSS JOIN ref_converters
+a.website_count,
+a.unique_users,
+b.unique_users AS ref_intenders,
+c.unique_users AS ref_genpop
+FROM total_output AS a
+CROSS JOIN ref_intenders AS b
+CROSS JOIN ref_genpop AS c
 
 LIMIT 10000;
