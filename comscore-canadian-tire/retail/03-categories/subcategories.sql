@@ -7,7 +7,7 @@ unique_intender_data AS (
     SELECT 
     calendar_date,
     event_detail,
-    zvelo_category,
+    zvelo_subcategory,
     guid,
     (CASE
     WHEN domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%' THEN 'Canadian Tire'
@@ -58,7 +58,7 @@ unique_converter_data AS (
     SELECT 
     calendar_date,
     event_detail,
-    zvelo_category,
+    zvelo_subcategory,
     guid,
     domain_group
     FROM unique_intender_data
@@ -85,7 +85,7 @@ converter_list AS (
 
 total_intenders AS (
     SELECT
-        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
+        UPPER(REPLACE(REPLACE(zvelo_subcategory, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
     FROM spectrum_comscore.clickstream_ca
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))  AND guid IN (
@@ -96,7 +96,7 @@ total_intenders AS (
 
 total_converters AS (
     SELECT
-        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
+        UPPER(REPLACE(REPLACE(zvelo_subcategory, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
     FROM spectrum_comscore.clickstream_ca
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))  AND guid IN (
@@ -107,7 +107,7 @@ total_converters AS (
 
 total_genpop AS (
      SELECT
-        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
+        UPPER(REPLACE(REPLACE(zvelo_subcategory, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
     FROM spectrum_comscore.clickstream_ca 
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
@@ -153,7 +153,7 @@ ref_converters AS (
 
 SELECT
 
-    total_output.join_field_a           AS zvelo_category,
+    total_output.join_field_a           AS zvelo_subcategory,
     total_output.total_intenders        AS total_intenders,
     total_output.total_converters       AS total_converters,
     total_output.total_genpop           AS total_genpop,
@@ -165,5 +165,7 @@ FROM        total_output
 CROSS JOIN  ref_genpop
 CROSS JOIN  ref_intenders
 CROSS JOIN  ref_converters
+WHERE total_intenders > 100
+ORDER BY 2 DESC
 
 LIMIT 10000;
