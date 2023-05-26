@@ -3,14 +3,13 @@ WITH
 date_lower_bound AS (SELECT '2021-01-01' AS value),
 date_upper_bound AS (SELECT '2022-12-31' AS value),
 
-unique_intender_data AS (
+non_unique_intender_data AS (
     SELECT 
     calendar_date,
-    event_detail,
-    domain,
+    event_time,
     guid,
     (CASE
-    WHEN domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%' THEN 'Canadian Tire'
+     WHEN domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%' THEN 'Canadian Tire'
     WHEN domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%' THEN 'Amazon'
     WHEN domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%' THEN 'Walmart'
     WHEN domain LIKE '%bestbuy.ca%' OR event_detail LIKE '%bestbuy.ca%' THEN 'Best Buy'
@@ -31,7 +30,7 @@ unique_intender_data AS (
     ELSE domain
     END) AS domain_group
     FROM spectrum_comscore.clickstream_ca
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))  AND
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND
     ( -- INTENDER LOGIC
             (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')
         OR (domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%')
@@ -54,75 +53,41 @@ unique_intender_data AS (
    )
 ),
 
-unique_converter_data AS (
-    SELECT 
-    calendar_date,
-    event_detail,
-    domain,
-    guid,
-    domain_group
-    FROM unique_intender_data
-    WHERE 
-    (  -- CONVERTER LOGIC
-           event_detail LIKE '%checkout%' 
-        OR event_detail LIKE '%commande%'
-        OR event_detail LIKE '%payment%'
-        OR event_detail LIKE '%caisse%'
-    )
-),
-
 -- *********************************************************************************************
 --  MAIN TABLES
 -- *********************************************************************************************
-
-intender_list AS (
-    SELECT DISTINCT guid FROM unique_intender_data
+first_visits AS (
+    SELECT guid,
+        domain_group,
+        ROW_NUMBER() OVER (PARTITION BY guid ORDER BY event_time) AS visit_rank
+    FROM non_unique_intender_data
 ),
 
-converter_list AS (
-    SELECT DISTINCT guid FROM unique_converter_data
+total_output_col_fv AS (
+   SELECT 
+        domain_group,
+        COUNT(guid) AS first_visit_users
+    FROM first_visits
+    WHERE visit_rank = 1
+    GROUP BY 1
+    ORDER BY 2 DESC
 ),
 
-total_intenders AS (
+total_output_col_uu AS (
     SELECT
-        domain AS join_field_a,
-        COUNT(DISTINCT guid) AS unique_users
-    FROM spectrum_comscore.clickstream_ca
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))  AND guid IN (
-        SELECT guid FROM intender_list
-    )
+    domain_group,
+    COUNT(DISTINCT guid) AS unique_users
+    FROM non_unique_intender_data
     GROUP BY 1
-),
-
-total_converters AS (
-    SELECT
-        domain AS join_field_a,
-        COUNT(DISTINCT guid) AS unique_users
-    FROM spectrum_comscore.clickstream_ca
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))  AND guid IN (
-        SELECT guid FROM converter_list
-    )
-    GROUP BY 1
-),
-
-total_genpop AS (
-     SELECT
-        domain AS join_field_a,
-        COUNT(DISTINCT guid) AS unique_users
-    FROM spectrum_comscore.clickstream_ca 
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
-    GROUP BY 1
+    ORDER BY 2 DESC
 ),
 
 total_output AS (
-    SELECT 
-        total_intenders.join_field_a,
-        total_intenders.unique_users AS total_intenders,
-        total_converters.unique_users AS total_converters,
-        total_genpop.unique_users AS total_genpop
-    FROM total_intenders
-    RIGHT JOIN total_converters ON total_intenders.join_field_a = total_converters.join_field_a 
-    RIGHT JOIN total_genpop ON total_intenders.join_field_a = total_genpop.join_field_a
+    SELECT
+    a.domain_group,
+    a.unique_users, 
+    b.first_visit_users
+    FROM total_output_col_uu AS a LEFT JOIN total_output_col_fv AS b ON a.domain_group = b.domain_group
 ),
 
 -- *********************************************************************************************
@@ -137,13 +102,7 @@ ref_genpop AS (
 
 ref_intenders AS (
     SELECT COUNT(DISTINCT guid) AS unique_users
-    FROM unique_intender_data
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
-),
-
-ref_converters AS (
-    SELECT COUNT(DISTINCT guid) AS unique_users
-    FROM unique_converter_data
+    FROM non_unique_intender_data
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
 )
 
@@ -152,17 +111,13 @@ ref_converters AS (
 -- *********************************************************************************************
 
 SELECT
-    total_output.join_field_a           AS domain,
-    total_output.total_genpop           AS total_genpop,
-    total_output.total_intenders        AS total_intenders,
-    total_output.total_converters       AS total_converters,
-    ref_genpop.unique_users             AS ref_genpop,
-    ref_intenders.unique_users          AS ref_intenders,
-    ref_converters.unique_users         AS ref_converters
-FROM        total_output
-CROSS JOIN  ref_genpop
-CROSS JOIN  ref_intenders
-CROSS JOIN  ref_converters
-WHERE total_intenders > 50
-ORDER BY 2 DESC
-LIMIT 100000;
+a.domain_group,
+a.unique_users,
+a.first_visit_users,
+b.unique_users AS ref_intenders,
+c.unique_users AS ref_genpop
+FROM total_output AS a
+CROSS JOIN ref_intenders AS b
+CROSS JOIN ref_genpop AS c
+
+LIMIT 10000;
