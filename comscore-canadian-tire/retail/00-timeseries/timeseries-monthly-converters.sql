@@ -120,8 +120,9 @@ ref_converters AS (
 SELECT
     total_output.join_field_a AS year,
     total_output.join_field_b AS month,
-    total_output.total_intenders AS total_intenders,
     total_output.total_genpop AS total_genpop,
+    total_output.total_intenders AS total_intenders,
+    total_output.total_converters AS total_converters,
     ref_genpop.unique_users AS ref_genpop,
     ref_intenders.unique_users AS ref_intenders,
     ref_converters.unique_users AS ref_converters
