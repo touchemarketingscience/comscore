@@ -26,7 +26,6 @@ comscore_filtered_locators AS (
         WHEN domain LIKE '%dollarama.com%' OR event_detail LIKE '%dollarama.com%' THEN 'Dollarama'
         ELSE domain
         END) AS competitor,
-        event_detail,
         COUNT (DISTINCT guid) as unique_users
     FROM spectrum_comscore.clickstream_ca
     WHERE (date_part(year, calendar_date) >= (SELECT value FROM year_lower_bound) AND date_part(year, calendar_date) <= (SELECT value FROM year_upper_bound)) 
@@ -51,8 +50,8 @@ comscore_filtered_locators AS (
             OR ((domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%') AND (event_detail LIKE '%warehouse-locations%'))
             OR ((domain LIKE '%dollarama.com%' OR event_detail LIKE '%dollarama.com%') AND (event_detail LIKE '%en-CA/locations%' OR event_detail LIKE '%fr-CA/localisateur%'))
         )
-    GROUP BY 1, 2
-    ORDER BY 3 DESC
+    GROUP BY 1
+    ORDER BY 2 DESC
 )
 
 SELECT * FROM comscore_filtered_locators
