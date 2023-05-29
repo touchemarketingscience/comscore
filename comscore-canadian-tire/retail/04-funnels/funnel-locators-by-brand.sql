@@ -54,6 +54,24 @@ unique_intender_data AS (
         )
 ),
 
+unique_converter_data AS (
+    SELECT 
+    calendar_date,
+    event_detail,
+    domain,
+    guid,
+    domain_group
+    FROM unique_intender_data
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))
+    AND
+        (  -- CONVERTER LOGIC
+               event_detail LIKE '%checkout%' 
+            OR event_detail LIKE '%commande%'
+            OR event_detail LIKE '%payment%'
+            OR event_detail LIKE '%caisse%'
+        )
+),
+
 unique_locator_data AS (
     SELECT 
     calendar_date,
@@ -112,6 +130,11 @@ intender_list AS (
     SELECT DISTINCT guid FROM unique_intender_data
 ),
 
+converter_list AS (
+    SELECT DISTINCT guid FROM unique_converter_data
+),
+
+
 locator_list AS (
     SELECT DISTINCT guid FROM unique_locator_data
 ),
@@ -124,6 +147,15 @@ total_intenders AS (
         domain_group AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
     FROM unique_intender_data
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))
+    GROUP BY 1
+),
+
+total_converters AS (
+    SELECT
+        domain_group AS join_field_a,
+        COUNT(DISTINCT guid) AS unique_users
+    FROM unique_converter_data
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))
     GROUP BY 1
 ),
@@ -175,11 +207,13 @@ total_output AS (
     SELECT 
         total_intenders.join_field_a    AS join_field_a,
         total_intenders.unique_users    AS total_intenders,
+        total_converters.unique_users   AS total_converters,
         total_locators.unique_users     AS total_locators,
         total_genpop.unique_users       AS total_genpop
     FROM total_intenders
-    LEFT JOIN total_genpop      ON total_intenders.join_field_a = total_genpop.join_field_a
-    LEFT JOIN total_locators    ON total_intenders.join_field_a = total_locators.join_field_a
+    LEFT JOIN total_genpop          ON total_intenders.join_field_a = total_genpop.join_field_a
+    LEFT JOIN total_converters      ON total_intenders.join_field_a = total_converters.join_field_a
+    LEFT JOIN total_locators        ON total_intenders.join_field_a = total_locators.join_field_a
 ),
 
 -- *********************************************************************************************
@@ -197,6 +231,11 @@ ref_intenders AS (
     FROM intender_list
 ),
 
+ref_converters AS (
+    SELECT COUNT(DISTINCT guid) AS unique_users
+    FROM converter_list
+),
+
 ref_locators AS (
     SELECT COUNT(DISTINCT guid) AS unique_users
     FROM locator_list
@@ -208,15 +247,18 @@ ref_locators AS (
 SELECT
     total_output.join_field_a           AS domain_group,
     total_output.total_intenders        AS total_intenders,
+    total_output.total_converters       AS total_converters,
     total_output.total_locators         AS total_locators,
     total_output.total_genpop           AS total_genpop,
     ref_intenders.unique_users          AS ref_intenders,
+    ref_converters.unique_users         AS ref_converters,
     ref_locators.unique_users           AS ref_locators,
     ref_genpop.unique_users             AS ref_genpop
 
 FROM        total_output
 CROSS JOIN  ref_genpop
 CROSS JOIN  ref_intenders
+CROSS JOIN  ref_converters
 CROSS JOIN  ref_locators
 
 
