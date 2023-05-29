@@ -31,8 +31,27 @@ unique_intender_data AS (
     ELSE domain
     END) AS domain_group
     FROM spectrum_comscore.clickstream_ca
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))  AND
-    ((domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%'))
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))
+    AND ( -- INTENDER LOGIC
+               (domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%')
+            OR (domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%')
+            OR (domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%')
+            OR (domain LIKE '%bestbuy.ca%' OR event_detail LIKE '%bestbuy.ca%')
+            OR (domain LIKE '%wayfair.ca%' OR event_detail LIKE '%wayfair.ca%')
+            OR (domain LIKE '%ikea.com%' OR event_detail LIKE '%ikea.com%')
+            OR (domain LIKE '%homesense.ca%' OR event_detail LIKE '%homesense.ca%')
+            OR (domain LIKE '%winners.ca%' OR event_detail LIKE '%winners.ca%')
+            OR (domain LIKE '%thebay.com%' OR event_detail LIKE '%thebay.com%')
+            OR (domain LIKE '%labaie.com%' OR event_detail LIKE '%labaie.com%')
+            OR (domain LIKE '%marshalls.ca%' OR event_detail LIKE '%marshalls.ca%')
+            OR (domain LIKE '%homehardware.ca%' OR event_detail LIKE '%homehardware.ca%')
+            OR (domain LIKE '%homedepot.ca%' OR event_detail LIKE '%homedepot.ca%')
+            OR (domain LIKE '%rona.ca%' OR event_detail LIKE '%rona.ca%')
+            OR (domain LIKE '%lowes.ca%' OR event_detail LIKE '%lowes.ca%')
+            OR (domain LIKE '%renodepot.com%' OR event_detail LIKE '%renodepot.com%')
+            OR (domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%')
+            OR (domain LIKE '%dollarama.com%' OR event_detail LIKE '%dollarama.com%')
+        )
 ),
 
 unique_converter_data AS (
