@@ -33,9 +33,9 @@ comscore_filtered_locators AS (
         AND 
         ( -- LOCATOR LOGIC
             -- ((domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%') AND (event_detail LIKE '%store-locator%' OR event_detail LIKE ' %localisateur-de-magasin%'))
-             ((domain LIKE '%amazon.ca%'  OR event_detail LIKE '%amazon.ca%') AND (event_detail LIKE '%store-locator%' OR event_detail LIKE ' %localisateur-de-magasin%'))
-            -- OR ((domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%'))
-            -- OR ((domain LIKE '%bestbuy.ca%' OR event_detail LIKE '%bestbuy.ca%'))
+            -- ((domain LIKE '%amazon.ca%'  OR event_detail LIKE '%amazon.ca%') AND (event_detail LIKE '%store-locator%' OR event_detail LIKE ' %localisateur-de-magasin%'))
+            -- ((domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%') AND (event_detail LIKE '%stores-near-me%' OR event_detail LIKE ' %magasin%'))
+            ((domain LIKE '%bestbuy.ca%' OR event_detail LIKE '%bestbuy.ca%') AND (event_detail LIKE '%stores.bestbuy.ca/en-ca/search%' OR event_detail LIKE ' %stores.bestbuy.ca/fr-ca/chercher%'))
             -- OR ((domain LIKE '%wayfair.ca%' OR event_detail LIKE '%wayfair.ca%'))
             -- OR ((domain LIKE '%ikea.com%' OR event_detail LIKE '%ikea.com%'))
             -- OR ((domain LIKE '%homesense.ca%' OR event_detail LIKE '%homesense.ca%'))
