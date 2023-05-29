@@ -103,7 +103,7 @@ unique_locator_data AS (
 ),
 
 -- *********************************************************************************************
---  MAIN TABLES
+--  GUID LIST
 -- *********************************************************************************************
 
 intender_list AS (
@@ -116,6 +116,19 @@ converter_list AS (
 
 locator_list AS (
     SELECT DISTINCT guid FROM unique_locator_data
+),
+
+-- *********************************************************************************************
+--  TOTAL INTENDERS, CONVERTERS, LOCATORS, GENPOP
+-- *********************************************************************************************
+
+total_genpop AS (
+     SELECT
+        domain AS join_field_a,
+        COUNT(DISTINCT guid) AS unique_users
+    FROM spectrum_comscore.clickstream_ca 
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
+    GROUP BY 1
 ),
 
 total_intenders AS (
@@ -151,18 +164,13 @@ total_locators AS (
     GROUP BY 1
 ),
 
-total_genpop AS (
-     SELECT
-        domain AS join_field_a,
-        COUNT(DISTINCT guid) AS unique_users
-    FROM spectrum_comscore.clickstream_ca 
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
-    GROUP BY 1
-),
+-- *********************************************************************************************
+--  MAIN OUTPUT DATA
+-- *********************************************************************************************
 
 total_output AS (
     SELECT 
-        total_intenders.join_field_a,
+        total_intenders.join_field_a    AS domain,
         total_genpop.unique_users       AS total_genpop,
         total_intenders.unique_users    AS total_intenders,
         total_converters.unique_users   AS total_converters,
@@ -206,7 +214,7 @@ ref_locators AS (
 -- *********************************************************************************************
 
 SELECT
-    total_output.join_field_a           AS domain,
+    total_output.domain                 AS domain,
     total_output.total_genpop           AS total_genpop,
     total_output.total_intenders        AS total_intenders,
     total_output.total_converters       AS total_converters,
@@ -220,6 +228,7 @@ CROSS JOIN  ref_genpop
 CROSS JOIN  ref_intenders
 CROSS JOIN  ref_converters
 CROSS JOIN  ref_locators
+
 -- COMPETITIVE SET EXCLUSION+VOLUME FILTER
 -- WHERE total_intenders > 50 AND NOT 
 -- ( -- INTENDER LOGIC
