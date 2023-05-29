@@ -122,7 +122,7 @@ total_intenders AS (
     SELECT
         domain AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
-    FROM spectrum_comscore.clickstream_ca
+    FROM unique_intender_data
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))  AND guid IN (
         SELECT guid FROM intender_list
     )
@@ -133,7 +133,7 @@ total_converters AS (
     SELECT
         domain AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
-    FROM spectrum_comscore.clickstream_ca
+    FROM unique_converter_data
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))  AND guid IN (
         SELECT guid FROM converter_list
     )
@@ -144,7 +144,7 @@ total_locators AS (
     SELECT
         domain AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
-    FROM spectrum_comscore.clickstream_ca
+    FROM unique_locator_data
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))  AND guid IN (
         SELECT guid FROM locator_list
     )
