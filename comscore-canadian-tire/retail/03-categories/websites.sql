@@ -121,8 +121,8 @@ total_output AS (
         total_converters.unique_users AS total_converters,
         total_genpop.unique_users AS total_genpop
     FROM total_intenders
-    RIGHT JOIN total_converters ON total_intenders.join_field_a = total_converters.join_field_a 
-    RIGHT JOIN total_genpop ON total_intenders.join_field_a = total_genpop.join_field_a
+    LEFT JOIN total_converters ON total_intenders.join_field_a = total_converters.join_field_a 
+    LEFT JOIN total_genpop ON total_intenders.join_field_a = total_genpop.join_field_a
 ),
 
 -- *********************************************************************************************
@@ -163,6 +163,26 @@ FROM        total_output
 CROSS JOIN  ref_genpop
 CROSS JOIN  ref_intenders
 CROSS JOIN  ref_converters
-WHERE total_intenders > 50
+WHERE total_intenders > 50 AND NOT 
+( -- INTENDER LOGIC
+            (domain LIKE '%canadiantire.ca%')
+        OR (domain LIKE '%amazon.ca%')
+        OR (domain LIKE '%walmart.ca%')
+        OR (domain LIKE '%bestbuy.ca%')
+        OR (domain LIKE '%wayfair.ca%')
+        OR (domain LIKE '%ikea.com%' )
+        OR (domain LIKE '%homesense.ca%')
+        OR (domain LIKE '%winners.ca%')
+        OR (domain LIKE '%thebay.com%')
+        OR (domain LIKE '%labaie.com%')
+        OR (domain LIKE '%marshalls.ca%')
+        OR (domain LIKE '%homehardware.ca%')
+        OR (domain LIKE '%homedepot.ca%')
+        OR (domain LIKE '%rona.ca%')
+        OR (domain LIKE '%lowes.ca%')
+        OR (domain LIKE '%renodepot.com%')
+        OR (domain LIKE '%costco.ca%')
+        OR (domain LIKE '%dollarama.com%')
+   )
 ORDER BY 2 DESC
 LIMIT 100000;
