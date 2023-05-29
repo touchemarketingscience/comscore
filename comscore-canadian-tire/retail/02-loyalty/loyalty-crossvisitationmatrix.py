@@ -1,34 +1,36 @@
-# Author: Roman-GPT Python Ver.
-
 import pandas as pd
 import numpy as np
 
-# Choose file
-file_path = input("Enter the path to your file: ")
+# Request user input for the file path
+file_path = input("Enter the path to your CSV file: ")
 
-# Read the CSV file
-indigo = pd.read_csv(file_path)
+# Load data from CSV file into a DataFrame
+dataframe = pd.read_csv(file_path)
 
-# Convert guid and brand columns to string
-indigo['guid'] = indigo['guid'].astype(str)
-indigo['brand'] = indigo['brand'].astype(str)
+# Convert 'guid' and 'brand' columns to string data type
+dataframe['guid'] = dataframe['guid'].astype(str)
+dataframe['brand'] = dataframe['brand'].astype(str)
 
-# Get unique brands
-unique_brands = indigo['brand'].unique()
+# Extract unique brands from the DataFrame
+unique_brands = dataframe['brand'].unique()
 
-# Create an empty dataframe with row and column names as unique brands
-data = pd.DataFrame(0, index=unique_brands, columns=unique_brands)
+# Initialize an empty DataFrame with rows and columns labeled with unique brands
+cross_visitation_matrix = pd.DataFrame(0, index=unique_brands, columns=unique_brands)
 
-# Loop through each combination of brand pairs
-for i, brand_i in enumerate(unique_brands):
-    guids_i = indigo[indigo['brand'] == brand_i]['guid'].unique()
+# Loop over each unique brand to calculate cross-visitation proportions
+for i, current_brand in enumerate(unique_brands):
+    # Get unique 'guid's associated with the current brand
+    current_brand_guids = dataframe[dataframe['brand'] == current_brand]['guid'].unique()
     
-    for j, brand_j in enumerate(unique_brands):
-        guids_j = indigo[indigo['brand'] == brand_j]['guid'].unique()
+    for j, comparison_brand in enumerate(unique_brands):
+        # Get unique 'guid's associated with the comparison brand
+        comparison_brand_guids = dataframe[dataframe['brand'] == comparison_brand]['guid'].unique()
 
-        # Calculate cross-visitation proportion
-        common_guids = np.sum(np.isin(guids_i, guids_j))
-        data.iloc[i, j] = common_guids / len(guids_i)
+        # Compute the number of 'guid's common to both the current brand and comparison brand
+        common_guids_count = np.sum(np.isin(current_brand_guids, comparison_brand_guids))
+        
+        # Compute cross-visitation proportion for current_brand-guids visiting comparison_brand
+        cross_visitation_matrix.iloc[i, j] = common_guids_count / len(current_brand_guids)
 
-# Write the output to a CSV file
-data.to_csv('cv_pets.csv')
+# Save the cross-visitation matrix as a CSV file
+cross_visitation_matrix.to_csv('cross_visitation_pets.csv')
