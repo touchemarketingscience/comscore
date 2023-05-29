@@ -134,7 +134,6 @@ converter_list AS (
     SELECT DISTINCT guid FROM unique_converter_data
 ),
 
-
 locator_list AS (
     SELECT DISTINCT guid FROM unique_locator_data
 ),
@@ -246,10 +245,12 @@ ref_locators AS (
 
 SELECT
     total_output.join_field_a           AS domain_group,
+
     total_output.total_intenders        AS total_intenders,
     total_output.total_converters       AS total_converters,
     total_output.total_locators         AS total_locators,
     total_output.total_genpop           AS total_genpop,
+
     ref_intenders.unique_users          AS ref_intenders,
     ref_converters.unique_users         AS ref_converters,
     ref_locators.unique_users           AS ref_locators,
