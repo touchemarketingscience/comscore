@@ -33,4 +33,4 @@ for i, current_brand in enumerate(unique_brands):
         cross_visitation_matrix.iloc[i, j] = common_guids_count / len(current_brand_guids)
 
 # Save the cross-visitation matrix as a CSV file
-cross_visitation_matrix.to_csv('cross_visitation_pets.csv')
+cross_visitation_matrix.to_csv('cross_visitation.csv')
