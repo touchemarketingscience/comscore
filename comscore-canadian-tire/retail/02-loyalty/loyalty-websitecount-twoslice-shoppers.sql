@@ -3,13 +3,12 @@ WITH
 date_lower_bound AS (SELECT '2021-01-01' AS value),
 date_upper_bound AS (SELECT '2022-12-31' AS value),
 
-non_unique_intender_data AS (
+unique_intender_data AS (
     SELECT 
     calendar_date,
-    event_time,
     guid,
     (CASE
-     WHEN domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%' THEN 'Canadian Tire'
+    WHEN domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%' THEN 'Canadian Tire'
     WHEN domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%' THEN 'Amazon'
     WHEN domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%' THEN 'Walmart'
     WHEN domain LIKE '%bestbuy.ca%' OR event_detail LIKE '%bestbuy.ca%' THEN 'Best Buy'
@@ -56,39 +55,26 @@ non_unique_intender_data AS (
 -- *********************************************************************************************
 --  MAIN TABLES
 -- *********************************************************************************************
-first_visits AS (
-    SELECT 
-        guid,
-        domain_group,
-        ROW_NUMBER() OVER (PARTITION BY guid ORDER BY event_time) AS visit_rank
-    FROM non_unique_intender_data
-),
 
-total_output_col_fv AS (
-   SELECT 
-        domain_group,
-        COUNT(guid) AS first_visit_users
-    FROM first_visits
-    WHERE visit_rank = 1
-    GROUP BY 1
-    ORDER BY 2 DESC
-),
-
-total_output_col_uu AS (
+total_website_visit_count_per_intender AS (
     SELECT
-    domain_group,
-    COUNT(DISTINCT guid) AS unique_users
-    FROM non_unique_intender_data
+        guid,
+        COUNT(DISTINCT domain_group) AS domain_group_count
+    FROM unique_intender_data
     GROUP BY 1
-    ORDER BY 2 DESC
 ),
 
 total_output AS (
     SELECT
-    a.domain_group,
-    a.unique_users, 
-    b.first_visit_users
-    FROM total_output_col_uu AS a LEFT JOIN total_output_col_fv AS b ON a.domain_group = b.domain_group
+        CASE
+        WHEN domain_group_count = 0 THEN '0 websites'
+        WHEN domain_group_count = 1 THEN '1 websites'
+        ELSE '2+ websites'
+        END AS website_count,
+        COUNT(guid) AS unique_users
+    FROM total_website_visit_count_per_intender
+    GROUP BY 1
+    ORDER BY MIN(domain_group_count)
 ),
 
 -- *********************************************************************************************
@@ -103,7 +89,7 @@ ref_genpop AS (
 
 ref_intenders AS (
     SELECT COUNT(DISTINCT guid) AS unique_users
-    FROM non_unique_intender_data
+    FROM unique_intender_data
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
 )
 
@@ -112,9 +98,8 @@ ref_intenders AS (
 -- *********************************************************************************************
 
 SELECT
-a.domain_group,
+a.website_count,
 a.unique_users,
-a.first_visit_users,
 b.unique_users AS ref_intenders,
 c.unique_users AS ref_genpop
 FROM total_output AS a

@@ -62,63 +62,6 @@ first_visits AS (
         domain_group,
         ROW_NUMBER() OVER (PARTITION BY guid ORDER BY event_time) AS visit_rank
     FROM non_unique_intender_data
-),
-
-total_output_col_fv AS (
-   SELECT 
-        domain_group,
-        COUNT(guid) AS first_visit_users
-    FROM first_visits
-    WHERE visit_rank = 1
-    GROUP BY 1
-    ORDER BY 2 DESC
-),
-
-total_output_col_uu AS (
-    SELECT
-    domain_group,
-    COUNT(DISTINCT guid) AS unique_users
-    FROM non_unique_intender_data
-    GROUP BY 1
-    ORDER BY 2 DESC
-),
-
-total_output AS (
-    SELECT
-    a.domain_group,
-    a.unique_users, 
-    b.first_visit_users
-    FROM total_output_col_uu AS a LEFT JOIN total_output_col_fv AS b ON a.domain_group = b.domain_group
-),
-
--- *********************************************************************************************
---  INDEX REFERENCE COLUMNS
--- *********************************************************************************************
-
-ref_genpop AS (
-    SELECT COUNT(DISTINCT guid) AS unique_users
-    FROM spectrum_comscore.clickstream_ca
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
-),
-
-ref_intenders AS (
-    SELECT COUNT(DISTINCT guid) AS unique_users
-    FROM non_unique_intender_data
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
 )
 
--- *********************************************************************************************
---  OUTPUT
--- *********************************************************************************************
-
-SELECT
-a.domain_group,
-a.unique_users,
-a.first_visit_users,
-b.unique_users AS ref_intenders,
-c.unique_users AS ref_genpop
-FROM total_output AS a
-CROSS JOIN ref_intenders AS b
-CROSS JOIN ref_genpop AS c
-
-LIMIT 10000;
+SELECT * FROM first_visits WHERE visit_rank = 1
