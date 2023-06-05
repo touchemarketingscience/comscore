@@ -52,14 +52,6 @@ unique_intender_data AS (
             OR (domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%')
             OR (domain LIKE '%dollarama.com%' OR event_detail LIKE '%dollarama.com%')
         )
-        
-    AND (
-        event_detail LIKE '%utm_campaign=%' -- Google UTM
-        OR event_detail LIKE '%gclid=%' -- Google Ads
-        OR event_detail LIKE '%cid=%' -- Adobe
-        OR event_detail LIKE '%doubleclick%' -- Adobe
-        OR event_detail LIKE '%;dc\_%'
-    )
 ),
 
 unique_converter_data AS (
@@ -140,14 +132,13 @@ unique_adconsumer_data AS (
     domain_group
     FROM unique_intender_data
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))
-    AND
-        (  -- CONVERTER LOGIC
-               event_detail LIKE '%utm_campaign=%' 
-            OR event_detail LIKE '%gclid=%'
-            OR event_detail LIKE '%cid=%'
-            OR event_detail LIKE '%doubleclick%'
-            OR event_detail LIKE '%;dc\_%'
-        )
+    AND (
+        event_detail LIKE '%utm_campaign=%' -- Google UTM
+        OR event_detail LIKE '%gclid=%' -- Google Ads
+        OR event_detail LIKE '%cid=%' -- Adobe
+        OR event_detail LIKE '%doubleclick%' -- Adobe
+        OR event_detail LIKE '%;dc\_%'
+    )
 ),
 -- *********************************************************************************************
 --  GUID LIST
@@ -295,6 +286,7 @@ SELECT
     total_output.total_intenders        AS total_intenders,
     total_output.total_converters       AS total_converters,
     total_output.total_locators         AS total_locators,
+    total_output.total_adconsumers      AS total_adconsumers,
     total_output.total_genpop           AS total_genpop,
 
     ref_intenders.unique_users          AS ref_intenders,
