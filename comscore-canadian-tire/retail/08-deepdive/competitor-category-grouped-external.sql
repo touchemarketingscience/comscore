@@ -8,6 +8,7 @@ unique_intender_data AS (
     calendar_date,
     event_detail,
     domain,
+    zvelo_category,
     guid,
     (CASE
     WHEN domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%' THEN 'Canadian Tire'
@@ -58,6 +59,7 @@ unique_converter_data AS (
     SELECT 
     calendar_date,
     event_detail,
+    zvelo_category,
     domain,
     guid,
     domain_group
@@ -77,6 +79,7 @@ unique_intender_data_canadiantire AS (
     SELECT 
     calendar_date,
     event_detail,
+    zvelo_category,
     domain,
     guid,
     (CASE
@@ -92,6 +95,7 @@ unique_converter_data_canadiantire AS (
     SELECT 
     calendar_date,
     event_detail,
+    zvelo_category,
     domain,
     guid,
     domain_group
@@ -111,6 +115,7 @@ unique_intender_data_walmart AS (
     SELECT 
     calendar_date,
     event_detail,
+    zvelo_category,
     domain,
     guid,
     (CASE
@@ -126,6 +131,7 @@ unique_converter_data_walmart AS (
     SELECT 
     calendar_date,
     event_detail,
+    zvelo_category,
     domain,
     guid,
     domain_group
@@ -172,7 +178,7 @@ converter_list_walmart AS (
 -- *********************************************************************************************
 total_intenders AS (
     SELECT
-        domain_group AS join_field_a,
+        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
     FROM unique_intender_data
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
@@ -181,7 +187,7 @@ total_intenders AS (
 
 total_converters AS (
     SELECT
-        domain_group AS join_field_a,
+        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
     FROM unique_converter_data
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))
@@ -190,7 +196,7 @@ total_converters AS (
 
 total_intenders_canadiantire AS (
     SELECT
-        domain_group AS join_field_a,
+        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
     FROM unique_intender_data_canadiantire
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
@@ -199,7 +205,7 @@ total_intenders_canadiantire AS (
 
 total_converters_canadiantire AS (
     SELECT
-        domain_group AS join_field_a,
+        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
     FROM unique_converter_data_canadiantire
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))
@@ -208,7 +214,7 @@ total_converters_canadiantire AS (
 
 total_intenders_walmart AS (
     SELECT
-        domain_group AS join_field_a,
+        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
     FROM unique_intender_data_walmart
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
@@ -217,7 +223,7 @@ total_intenders_walmart AS (
 
 total_converters_walmart AS (
     SELECT
-        domain_group AS join_field_a,
+        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
     FROM unique_converter_data_walmart
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))
@@ -226,27 +232,7 @@ total_converters_walmart AS (
 
 total_genpop AS (
      SELECT
-        (CASE
-        WHEN domain LIKE '%canadiantire.ca%' OR event_detail LIKE '%canadiantire.ca%' THEN 'Canadian Tire'
-        WHEN domain LIKE '%amazon.ca%' OR event_detail LIKE '%amazon.ca%' THEN 'Amazon'
-        WHEN domain LIKE '%walmart.ca%' OR event_detail LIKE '%walmart.ca%' THEN 'Walmart'
-        WHEN domain LIKE '%bestbuy.ca%' OR event_detail LIKE '%bestbuy.ca%' THEN 'Best Buy'
-        WHEN domain LIKE '%wayfair.ca%' OR event_detail LIKE '%wayfair.ca%' THEN 'Wayfair'
-        WHEN domain LIKE '%ikea.com%' OR event_detail LIKE '%ikea.com%' THEN 'IKEA'
-        WHEN domain LIKE '%homesense.ca%' OR event_detail LIKE '%homesense.ca%' THEN 'Home Sense'
-        WHEN domain LIKE '%winners.ca%' OR event_detail LIKE '%winners.ca%' THEN 'Winners'
-        WHEN domain LIKE '%thebay.com%' OR event_detail LIKE '%thebay.com%' THEN 'Hudsons Bay'
-        WHEN domain LIKE '%labaie.com%' OR event_detail LIKE '%labaie.com%' THEN 'Hudsons Bay'
-        WHEN domain LIKE '%marshalls.ca%' OR event_detail LIKE '%marshalls.ca%' THEN 'Marshalls'
-        WHEN domain LIKE '%homehardware.ca%' OR event_detail LIKE '%homehardware.ca%' THEN 'Home Hardware'
-        WHEN domain LIKE '%homedepot.ca%' OR event_detail LIKE '%homedepot.ca%' THEN 'Home Depot'
-        WHEN domain LIKE '%rona.ca%' OR event_detail LIKE '%rona.ca%' THEN 'Rona'
-        WHEN domain LIKE '%lowes.ca%' OR event_detail LIKE '%lowes.ca%' THEN 'Lowes'
-        WHEN domain LIKE '%renodepot.com%' OR event_detail LIKE '%renodepot.com%' THEN 'Reno Depot'
-        WHEN domain LIKE '%costco.ca%' OR event_detail LIKE '%costco.ca%' THEN 'Costco'
-        WHEN domain LIKE '%dollarama.com%' OR event_detail LIKE '%dollarama.com%' THEN 'Dollarama'
-        ELSE domain
-        END) AS join_field_a,
+        UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
     FROM spectrum_comscore.clickstream_ca 
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
@@ -259,21 +245,21 @@ total_genpop AS (
 
 total_output AS (
     SELECT 
-        total_intenders.join_field_a    AS join_field_a,
-        total_intenders.unique_users    AS total_intenders,
-        total_converters.unique_users   AS total_converters,
-        total_genpop.unique_users       AS total_genpop,
-        total_intenders_canadiantire.unique_users AS total_intenders_canadiantire,
-        total_converters_canadiantire.unique_users AS total_converters_canadiantire,
-        total_intenders_walmart.unique_users AS total_intenders_walmart,
-        total_converters_walmart.unique_users AS total_converters_walmart
+        total_intenders.join_field_a                AS join_field_a,
+        total_intenders.unique_users                AS total_intenders,
+        total_converters.unique_users               AS total_converters,
+        total_genpop.unique_users                   AS total_genpop,
+        total_intenders_canadiantire.unique_users   AS total_intenders_canadiantire,
+        total_converters_canadiantire.unique_users  AS total_converters_canadiantire,
+        total_intenders_walmart.unique_users        AS total_intenders_walmart,
+        total_converters_walmart.unique_users       AS total_converters_walmart
     FROM total_intenders
-    LEFT JOIN total_genpop          ON total_intenders.join_field_a = total_genpop.join_field_a
-    LEFT JOIN total_converters      ON total_intenders.join_field_a = total_converters.join_field_a
-    LEFT JOIN total_intenders_canadiantire ON total_intenders.join_field_a = total_intenders_canadiantire.join_field_a
-    LEFT JOIN total_converters_canadiantire ON total_intenders.join_field_a = total_converters_canadiantire.join_field_a
-    LEFT JOIN total_intenders_walmart ON total_intenders.join_field_a = total_intenders_walmart.join_field_a
-    LEFT JOIN total_converters_walmart ON total_intenders.join_field_a = total_converters_walmart.join_field_a
+    LEFT JOIN total_genpop                          ON total_intenders.join_field_a = total_genpop.join_field_a
+    LEFT JOIN total_converters                      ON total_intenders.join_field_a = total_converters.join_field_a
+    LEFT JOIN total_intenders_canadiantire          ON total_intenders.join_field_a = total_intenders_canadiantire.join_field_a
+    LEFT JOIN total_converters_canadiantire         ON total_intenders.join_field_a = total_converters_canadiantire.join_field_a
+    LEFT JOIN total_intenders_walmart               ON total_intenders.join_field_a = total_intenders_walmart.join_field_a
+    LEFT JOIN total_converters_walmart              ON total_intenders.join_field_a = total_converters_walmart.join_field_a
 ),
 
 -- *********************************************************************************************
@@ -316,26 +302,26 @@ ref_converters_walmart AS (
     FROM converter_list_walmart
 )
 
-
 -- *********************************************************************************************
 --  OUTPUT
 -- *********************************************************************************************
 
 SELECT
-    total_output.join_field_a           AS domain_group,
-
-    total_output.total_intenders        AS total_intenders,
-    total_output.total_converters       AS total_converters,
-    total_output.total_genpop           AS total_genpop,
-
-    ref_intenders.unique_users          AS ref_intenders,
-    ref_converters.unique_users         AS ref_converters,
-    ref_genpop.unique_users             AS ref_genpop,
-
-    ref_intenders_canadiantire.unique_users AS ref_intenders_canadiantire,
-    ref_converters_canadiantire.unique_users AS ref_converters_canadiantire,
-    ref_intenders_walmart.unique_users AS ref_intenders_walmart,
-    ref_converters_walmart.unique_users AS ref_converters_walmart
+    total_output.join_field_a                   AS join_field_a,
+    total_output.total_intenders                AS total_intenders,
+    total_output.total_converters               AS total_converters,
+    total_output.total_genpop                   AS total_genpop,
+    total_output.total_intenders_canadiantire   AS total_intenders_canadiantire,
+    total_output.total_converters_canadiantire  AS total_converters_canadiantire,
+    total_output.total_intenders_walmart        AS total_intenders_walmart,
+    total_output.total_converters_walmart       AS total_converters_walmart,
+    ref_intenders.unique_users                  AS ref_intenders,
+    ref_converters.unique_users                 AS ref_converters,
+    ref_genpop.unique_users                     AS ref_genpop,
+    ref_intenders_canadiantire.unique_users     AS ref_intenders_canadiantire,
+    ref_converters_canadiantire.unique_users    AS ref_converters_canadiantire,
+    ref_intenders_walmart.unique_users          AS ref_intenders_walmart,
+    ref_converters_walmart.unique_users         AS ref_converters_walmart
 
 FROM        total_output
 CROSS JOIN  ref_genpop
