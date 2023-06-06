@@ -1,6 +1,6 @@
 WITH 
 
-date_lower_bound AS (SELECT '2019-01-01' AS value),
+date_lower_bound AS (SELECT '2021-01-01' AS value),
 date_upper_bound AS (SELECT '2023-03-31' AS value),
 
 unique_intender_data AS (
@@ -84,14 +84,14 @@ ref_intenders AS (
 -- *********************************************************************************************
 
 SELECT
-    a.join_field_a AS year,
-    a.join_field_b AS month,
-    a.total_intenders AS total_intenders,
-    a.total_genpop AS total_genpop,
-    b.unique_users AS ref_genpop,
-    c.unique_users AS ref_intenders
-FROM total_output AS a
-CROSS JOIN ref_genpop AS b
-CROSS JOIN ref_intenders AS c
+    total_output.join_field_a AS year,
+    total_output.join_field_b AS month,
+    total_output.total_intenders AS total_intenders,
+    total_output.total_genpop AS total_genpop,
+    ref_genpop.unique_users AS ref_genpop,
+    ref_intenders.unique_users AS ref_intenders
+FROM total_output
+CROSS JOIN ref_genpop
+CROSS JOIN ref_intenders
 
 LIMIT 10000;
