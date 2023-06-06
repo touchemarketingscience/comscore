@@ -180,8 +180,8 @@ total_intenders AS (
     SELECT
         UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
-    FROM unique_intender_data
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
+    FROM spectrum_comscore.clickstream_ca
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND guid IN (SELECT guid FROM intender_list)
     GROUP BY 1
 ),
 
@@ -189,8 +189,8 @@ total_converters AS (
     SELECT
         UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
-    FROM unique_converter_data
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))
+    FROM spectrum_comscore.clickstream_ca
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND guid IN (SELECT guid FROM converter_list)
     GROUP BY 1
 ),
 
@@ -198,8 +198,8 @@ total_intenders_canadiantire AS (
     SELECT
         UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
-    FROM unique_intender_data_canadiantire
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
+    FROM spectrum_comscore.clickstream_ca
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND guid IN (SELECT guid FROM intender_list_canadiantire)
     GROUP BY 1
 ),
 
@@ -207,8 +207,8 @@ total_converters_canadiantire AS (
     SELECT
         UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
-    FROM unique_converter_data_canadiantire
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))
+    FROM spectrum_comscore.clickstream_ca
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND guid IN (SELECT guid FROM converter_list_canadiantire)
     GROUP BY 1
 ),
 
@@ -216,8 +216,8 @@ total_intenders_walmart AS (
     SELECT
         UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
-    FROM unique_intender_data_walmart
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) 
+    FROM spectrum_comscore.clickstream_ca
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))  AND guid IN (SELECT guid FROM intender_list_walmart)
     GROUP BY 1
 ),
 
@@ -225,8 +225,8 @@ total_converters_walmart AS (
     SELECT
         UPPER(REPLACE(REPLACE(zvelo_category, ' and ', '&'),' ','')) AS join_field_a,
         COUNT(DISTINCT guid) AS unique_users
-    FROM unique_converter_data_walmart
-    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))
+    FROM spectrum_comscore.clickstream_ca
+    WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND guid IN (SELECT guid FROM converter_list_walmart)
     GROUP BY 1
 ),
 
