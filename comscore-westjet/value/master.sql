@@ -1,7 +1,7 @@
 WITH 
 
 date_lower_bound AS (SELECT '2021-01-01' AS value),
-date_upper_bound AS (SELECT '2022-12-31' AS value),
+date_upper_bound AS (SELECT '2023-03-31' AS value),
 
 unique_intender_data AS (
     SELECT 
@@ -57,19 +57,19 @@ unique_converter_data AS (
     WHERE ((calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound))
     AND ( -- INTENDER LOGIC
             ((event_detail LIKE '%vacations.aircanada.c%') AND (event_detail LIKE '%book%')) OR
-            ((event_detail LIKE '%aircanada.c%') AND (event_detail LIKE '%farereview%')) OR
+            ((event_detail LIKE '%aircanada.c%') AND (event_detail LIKE '%book%')) OR
             ((event_detail LIKE '%westjet.c%' AND event_detail LIKE '%vacations%') AND (event_detail LIKE '%book%' AND event_detail LIKE '%verif%')) OR
-            ((event_detail LIKE '%westjet.c%') AND (event_detail LIKE '%book%' AND event_detail LIKE '%verif%')) OR
+            ((event_detail LIKE '%westjet.c%') AND (event_detail LIKE '%book%')) OR
             ((event_detail LIKE '%flyporter.c%' OR domain LIKE '%flyporter.c%') AND (event_detail LIKE '%book%')) OR
-            ((event_detail LIKE '%airtransat.c%' OR domain LIKE '%airtransat.c%') AND (event_detail LIKE '%bookings%')) OR
-            ((event_detail LIKE '%flyflair.c%' OR domain LIKE '%flyflair.c%') AND (event_detail LIKE '%booking%')) OR
+            ((event_detail LIKE '%airtransat.c%' OR domain LIKE '%airtransat.c%') AND (event_detail LIKE '%book%')) OR
+            ((event_detail LIKE '%flyflair.c%' OR domain LIKE '%flyflair.c%') AND (event_detail LIKE '%book%')) OR
             ((event_detail LIKE '%emirates.c%' OR domain LIKE '%emirates.c%') AND (event_detail LIKE '%fly2%')) OR
-            ((event_detail LIKE '%airfrance.c%' OR domain LIKE '%airfrance.c%') AND (event_detail LIKE '%checkout%')) OR
-            ((event_detail LIKE '%fijiairways.c%' OR domain LIKE '%fijiairways.c%') AND (event_detail LIKE '%booking%')) OR
-            ((event_detail LIKE '%qatarairways.c%' OR domain LIKE '%qatarairways.c%') AND (event_detail LIKE '%booking.q%')) OR
-            ((event_detail LIKE '%turkishairlines.c%' OR domain LIKE '%turkishairlines.c%') AND (event_detail LIKE '%booking%')) OR
-            ((event_detail LIKE '%flylynx.c%' OR domain LIKE '%flylynx.c%') AND (event_detail LIKE '%passengers%')) OR
-            ((event_detail LIKE '%sunwing.c%' OR domain LIKE '%sunwing.c%') AND (event_detail LIKE '%book%' AND event_detail LIKE '%verif%'))
+            ((event_detail LIKE '%airfrance.c%' OR domain LIKE '%airfrance.c%') AND (event_detail LIKE '%exchange%')) OR
+            ((event_detail LIKE '%fijiairways.c%' OR domain LIKE '%fijiairways.c%') AND (event_detail LIKE '%book%')) OR
+            ((event_detail LIKE '%qatarairways.c%' OR domain LIKE '%qatarairways.c%') AND (event_detail LIKE '%book%')) OR
+            ((event_detail LIKE '%turkishairlines.c%' OR domain LIKE '%turkishairlines.c%') AND (event_detail LIKE '%book%')) OR
+            ((event_detail LIKE '%flylynx.c%' OR domain LIKE '%flylynx.c%') AND (event_detail LIKE '%payment%')) OR
+            ((event_detail LIKE '%sunwing.c%' OR domain LIKE '%sunwing.c%') AND (event_detail LIKE '%book%'))
         )
 ),
 
