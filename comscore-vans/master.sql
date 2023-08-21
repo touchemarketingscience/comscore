@@ -1,6 +1,6 @@
 WITH 
 date_lower_bound AS (SELECT '2019-01-01' AS value),
-date_upper_bound AS (SELECT '2022-12-31' AS value),
+date_upper_bound AS (SELECT '2023-03-31' AS value),
 comscore_data AS (
 	SELECT 
     date_part(year, calendar_date) AS year,
