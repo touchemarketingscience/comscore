@@ -3,8 +3,8 @@ date_lower_bound AS (SELECT '2022-11-16' AS value),
 date_upper_bound AS (SELECT '2023-10-31' AS value),
 unique_intender_data AS (
     SELECT 
-    calendar_date,
     guid
+    calendar_date,
     FROM spectrum_comscore.clickstream_ca
     WHERE ( (calendar_date) >= (SELECT value FROM date_lower_bound) AND calendar_date <= (SELECT value FROM date_upper_bound)) AND
     (

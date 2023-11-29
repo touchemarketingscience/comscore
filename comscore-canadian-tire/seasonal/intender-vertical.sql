@@ -183,6 +183,7 @@ main AS (
                 event_detail LIKE '%trampoline%' OR 
                 event_detail LIKE '%nerf%' OR 
                 event_detail LIKE '%water-gun%' OR
+                (event_detail LIKE '%swing%' AND event_detail LIKE '%set%') OR
                 event_detail LIKE '%play%' AND (event_detail LIKE '%house%' OR event_detail LIKE '%ground%')
             THEN 'Backyard Toys'
             WHEN 
