@@ -40,7 +40,7 @@ non_unique_intender_data AS (
             OR (domain = 'renodepot.com' 	OR domain = 'renodepot.ca')
             OR (domain = 'costco.ca' 		OR domain = 'costco.com')
             OR (domain = 'dollarama.com' 	OR domain = 'dollarama.ca')
-        )
+        ),
 ),
 -- *********************************************************************************************
 --  MAIN TABLES
